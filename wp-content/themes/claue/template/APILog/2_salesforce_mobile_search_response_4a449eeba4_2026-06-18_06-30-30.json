@@ -1,0 +1,12 @@
+{
+    "timestamp": "2026-06-18 06:30:30",
+    "request_id": "4a449eeba4",
+    "prefix": "2_salesforce_mobile_search_response",
+    "data": {
+        "http_code": 403,
+        "curl_error": "",
+        "effective_url": "https://trufrostandbutler--qa.sandbox.my.salesforce.com/services/apexrest/web_mobileSearch",
+        "response": "[{\"errorCode\":\"FORBIDDEN\",\"message\":\"You do not have access to the Apex class named: web_mobileSearchAPI\"}]",
+        "response_length": 107
+    }
+}

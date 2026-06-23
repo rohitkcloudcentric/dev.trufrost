@@ -1,0 +1,30 @@
+# Ignore huge archives/zips (GitHub limit is 100MB)
+*.zip
+*.tar.gz
+*.rar
+*.7z
+*.tar
+
+# Ignore log files
+*.log
+error_log
+
+# Ignore large media/uploads directories
+wp-content/uploads/
+wp-content/cache/
+wp-content/blogs.dir/
+wp-content/upgrade/
+wp-content/backup-db/
+
+# Ignore OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Ignore configuration / credentials files if needed
+wp-config.php
+
+# Ignore API logs and temp files
+**/APILog/
+wp-content/temp-write-test-*
+temp-write-test-*

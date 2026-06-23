@@ -1,0 +1,12 @@
+{
+    "timestamp": "2026-06-19 12:25:58",
+    "request_id": "6cb1f274f4",
+    "prefix": "2_salesforce_mobile_search_response",
+    "data": {
+        "http_code": 200,
+        "curl_error": "",
+        "effective_url": "https://trufrostandbutler--qa.sandbox.my.salesforce.com/services/apexrest/web_mobileSearch",
+        "response": "{\"tagList\":[],\"message\":\"Success\",\"contactInfo\":{\"SF_ContactId\":\"003HE00000HkrFdYAJ\",\"SF_AccountId\":\"001HE00000JEFfNYAX\",\"mobileNumber\":\"7619068518\",\"mailingAddress\":\", , , India - \",\"Email\":\"saurabh@test.com\",\"contactName\":\"Saurabh Pandey2\"},\"assetList\":[{\"warrantyType\":\"Standard Warranty\",\"SF_AccountId\":\"001HE00000JEFfNYAX\",\"serialNumber\":\"HP998877\",\"purchaseDate\":\"2026-05-26\",\"productId\":\"a04Bi000001RfJUIA0\",\"price\":15000.00,\"assetName\":\"HP Printer\",\"assetId\":\"02iHE0000083yXhYAI\"}],\"accountInfo\":{\"SF_AccountId\":\"001HE00000JEFfNYAX\",\"pan\":\"ABCDE1234F\",\"isDefaultAccount\":true,\"gstin\":\"29ABCDE1234F1Z5\",\"billingAddress\":\"Vibhuti Khand, Lucknow, Uttar Pradesh, India - 226010\",\"accountName\":\"ABC Technologies1\",\"accountCategory\":\"Direct\"}}",
+        "response_length": 745
+    }
+}

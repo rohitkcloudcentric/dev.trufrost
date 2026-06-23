@@ -1,0 +1,10 @@
+{
+    "timestamp": "2026-06-19 13:31:08",
+    "request_id": "b7b7963d4c",
+    "prefix": "1_salesforce_oauth_request",
+    "data": {
+        "grant_type": "client_credentials",
+        "client_id": "3MVG9LQU2EgIG3GDe3NLi5g2PkBG2WXN3Xevy9qCE0qCyVTnveY4NiwodJW2vlmZhfZ9qj0ktpOfVVAS9Qiwv",
+        "client_secret": "7F7450008D27AE1220C78FF2D345B59CB34F5C07A04FF9AD712D31BB275E5FB8"
+    }
+}

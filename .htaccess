@@ -1,0 +1,86 @@
+# BEGIN HMWP_VULNERABILITY
+<IfModule mod_headers.c>
+Header always unset x-powered-by
+Header always unset server
+ServerSignature Off
+</IfModule>
+
+<IfModule mod_headers.c>
+Header set Strict-Transport-Security "max-age=63072000"
+Header set Content-Security-Policy "object-src 'none'"
+Header set X-XSS-Protection "1; mode=block"
+Header set X-Content-Type-Options "nosniff"
+</IfModule>
+
+
+# END HMWP_VULNERABILITY
+# BEGIN HMWP_RULES
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteRule ^([0-9a-zA-Z_-]+/)?administrator/(.*) /dev.trufrost/wp-admin/$2 [QSA,NC,L]
+RewriteRule ^([0-9a-zA-Z_-]+/)?newlogin$ /dev.trufrost/wp-login.php [QSA,NC,L]
+RewriteRule ^([0-9a-zA-Z_-]+/)?newlogin/(.*) /dev.trufrost/wp-login.php$2 [QSA,NC,L]
+RewriteRule ^([0-9a-zA-Z_-]+/)?lostpass$ /dev.trufrost/wp-login.php?action=lostpassword [QSA,NC,L]
+RewriteRule ^([0-9a-zA-Z_-]+/)?register$ /dev.trufrost/wp-login.php?action=register [QSA,NC,L]
+RewriteRule ^([0-9a-zA-Z_-]+/)?core/modules/d0f4711431/(.*) /dev.trufrost/wp-content/plugins/hide-my-wp/$2 [QSA,NC,L]
+RewriteRule ^([0-9a-zA-Z_-]+/)?core/modules/1eb0ea56fc/(.*) /dev.trufrost/wp-content/plugins/all-in-one-video-gallery/$2 [QSA,NC,L]
+RewriteRule ^([0-9a-zA-Z_-]+/)?core/modules/ad7bdb6c4e/(.*) /dev.trufrost/wp-content/plugins/Ultimate_VC_Addons/$2 [QSA,NC,L]
+RewriteRule ^([0-9a-zA-Z_-]+/)?core/modules/bd4bcf2e46/(.*) /dev.trufrost/wp-content/plugins/add-search-to-menu/$2 [QSA,NC,L]
+RewriteRule ^([0-9a-zA-Z_-]+/)?core/modules/8b7626567f/(.*) /dev.trufrost/wp-content/plugins/akeebabackupwp/$2 [QSA,NC,L]
+RewriteRule ^([0-9a-zA-Z_-]+/)?core/modules/1ab3371164/(.*) /dev.trufrost/wp-content/plugins/awsm-team-pro/$2 [QSA,NC,L]
+RewriteRule ^([0-9a-zA-Z_-]+/)?core/modules/434b8996f4/(.*) /dev.trufrost/wp-content/plugins/classic-editor/$2 [QSA,NC,L]
+RewriteRule ^([0-9a-zA-Z_-]+/)?core/modules/be9d13c2e1/(.*) /dev.trufrost/wp-content/plugins/claue-addons/$2 [QSA,NC,L]
+RewriteRule ^([0-9a-zA-Z_-]+/)?core/modules/1035cb636b/(.*) /dev.trufrost/wp-content/plugins/cm-pop-up-banners/$2 [QSA,NC,L]
+RewriteRule ^([0-9a-zA-Z_-]+/)?core/modules/5ad0f56ae7/(.*) /dev.trufrost/wp-content/plugins/custom-sidebars/$2 [QSA,NC,L]
+RewriteRule ^([0-9a-zA-Z_-]+/)?core/modules/8707efa35f/(.*) /dev.trufrost/wp-content/plugins/duplicate-page/$2 [QSA,NC,L]
+RewriteRule ^([0-9a-zA-Z_-]+/)?core/modules/ddcaa01634/(.*) /dev.trufrost/wp-content/plugins/export-import-menus/$2 [QSA,NC,L]
+RewriteRule ^([0-9a-zA-Z_-]+/)?core/modules/61534cff16/(.*) /dev.trufrost/wp-content/plugins/formidable/$2 [QSA,NC,L]
+RewriteRule ^([0-9a-zA-Z_-]+/)?core/modules/36ea601d94/(.*) /dev.trufrost/wp-content/plugins/http-https-remover/$2 [QSA,NC,L]
+RewriteRule ^([0-9a-zA-Z_-]+/)?core/modules/0573073481/(.*) /dev.trufrost/wp-content/plugins/jquery-updater/$2 [QSA,NC,L]
+RewriteRule ^([0-9a-zA-Z_-]+/)?core/modules/041dc5d622/(.*) /dev.trufrost/wp-content/plugins/js_composer/$2 [QSA,NC,L]
+RewriteRule ^([0-9a-zA-Z_-]+/)?core/modules/26b926cabc/(.*) /dev.trufrost/wp-content/plugins/megamenu-pro/$2 [QSA,NC,L]
+RewriteRule ^([0-9a-zA-Z_-]+/)?core/modules/735e9e247d/(.*) /dev.trufrost/wp-content/plugins/megamenu/$2 [QSA,NC,L]
+RewriteRule ^([0-9a-zA-Z_-]+/)?core/modules/e0503510c1/(.*) /dev.trufrost/wp-content/plugins/ml-slider/$2 [QSA,NC,L]
+RewriteRule ^([0-9a-zA-Z_-]+/)?core/modules/3cbb466af9/(.*) /dev.trufrost/wp-content/plugins/mobile-menu/$2 [QSA,NC,L]
+RewriteRule ^([0-9a-zA-Z_-]+/)?core/modules/0ef4854e90/(.*) /dev.trufrost/wp-content/plugins/niso-carousel-slider/$2 [QSA,NC,L]
+RewriteRule ^([0-9a-zA-Z_-]+/)?core/modules/3548690ec6/(.*) /dev.trufrost/wp-content/plugins/shortcode-widget/$2 [QSA,NC,L]
+RewriteRule ^([0-9a-zA-Z_-]+/)?core/modules/3e2c895baf/(.*) /dev.trufrost/wp-content/plugins/ultimate-responsive-image-slider/$2 [QSA,NC,L]
+RewriteRule ^([0-9a-zA-Z_-]+/)?core/modules/306719d3e1/(.*) /dev.trufrost/wp-content/plugins/w3-total-cache/$2 [QSA,NC,L]
+RewriteRule ^([0-9a-zA-Z_-]+/)?core/modules/db132813d5/(.*) /dev.trufrost/wp-content/plugins/woo-product-bundle/$2 [QSA,NC,L]
+RewriteRule ^([0-9a-zA-Z_-]+/)?core/modules/6f896fa280/(.*) /dev.trufrost/wp-content/plugins/woocommerce-google-analytics-integration/$2 [QSA,NC,L]
+RewriteRule ^([0-9a-zA-Z_-]+/)?core/modules/39d10ee62c/(.*) /dev.trufrost/wp-content/plugins/woocommerce/$2 [QSA,NC,L]
+RewriteRule ^([0-9a-zA-Z_-]+/)?core/modules/988ebb6a9a/(.*) /dev.trufrost/wp-content/plugins/woosidebars/$2 [QSA,NC,L]
+RewriteRule ^([0-9a-zA-Z_-]+/)?core/modules/5f535e89d2/(.*) /dev.trufrost/wp-content/plugins/wordfence/$2 [QSA,NC,L]
+RewriteRule ^([0-9a-zA-Z_-]+/)?core/modules/a3682f00e8/(.*) /dev.trufrost/wp-content/plugins/wp-logo-showcase-responsive-slider-slider/$2 [QSA,NC,L]
+RewriteRule ^([0-9a-zA-Z_-]+/)?core/modules/de9fff3358/(.*) /dev.trufrost/wp-content/plugins/wp-mega-menu-pro/$2 [QSA,NC,L]
+RewriteRule ^([0-9a-zA-Z_-]+/)?core/modules/c313883c11/(.*) /dev.trufrost/wp-content/plugins/wp-optimize/$2 [QSA,NC,L]
+RewriteRule ^([0-9a-zA-Z_-]+/)?core/modules/0cda5eba87/(.*) /dev.trufrost/wp-content/plugins/wpa-woocommerce-product-bundle/$2 [QSA,NC,L]
+RewriteRule ^([0-9a-zA-Z_-]+/)?core/modules/19e569e474/(.*) /dev.trufrost/wp-content/plugins/yith-woocommerce-ajax-navigation/$2 [QSA,NC,L]
+RewriteRule ^([0-9a-zA-Z_-]+/)?core/modules/(.*) /dev.trufrost/wp-content/plugins/$2 [QSA,NC,L]
+RewriteRule ^([0-9a-zA-Z_-]+/)?core/views/6e32f0d781/design.css$ /dev.trufrost/wp-content/themes/claue/style.css [QSA,NC,L]
+RewriteRule ^([0-9a-zA-Z_-]+/)?core/views/6e32f0d781/(.*) /dev.trufrost/wp-content/themes/claue/$2 [QSA,NC,L]
+RewriteRule ^([0-9a-zA-Z_-]+/)?core/views/(.*) /dev.trufrost/wp-content/themes/$2 [QSA,NC,L]
+RewriteRule ^([0-9a-zA-Z_-]+/)?assets/(.*) /dev.trufrost/wp-content/uploads/$2 [QSA,NC,L]
+RewriteRule ^([0-9a-zA-Z_-]+/)?core/(.*) /dev.trufrost/wp-content/$2 [QSA,NC,L]
+RewriteRule ^([0-9a-zA-Z_-]+/)?weblib/(.*) /dev.trufrost/wp-includes/$2 [QSA,NC,L]
+RewriteRule ^([0-9a-zA-Z_-]+/)?messages/(.*) /dev.trufrost/wp-comments-post.php$2 [QSA,NC,L]
+RewriteRule ^([0-9a-zA-Z_-]+/)?writer/(.*) /dev.trufrost/author/$2 [QSA,NC,L]
+</IfModule>
+# END HMWP_RULES
+
+# BEGIN WordPress
+# The directives (lines) between "BEGIN WordPress" and "END WordPress" are
+# dynamically generated, and should only be modified via WordPress filters.
+# Any changes to the directives between these markers will be overwritten.
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+RewriteBase /dev.trufrost/
+RewriteRule ^index\.php$ - [L]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule . /dev.trufrost/index.php [L]
+</IfModule>
+
+# END WordPress
+

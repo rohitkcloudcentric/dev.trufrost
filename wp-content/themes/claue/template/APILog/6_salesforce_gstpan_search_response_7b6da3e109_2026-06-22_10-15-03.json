@@ -1,0 +1,10 @@
+{
+    "timestamp": "2026-06-22 10:15:03",
+    "request_id": "7b6da3e109",
+    "prefix": "6_salesforce_gstpan_search_response",
+    "data": {
+        "http_code": 200,
+        "curl_error": "",
+        "response": "{\"tagList\":[],\"message\":\"Success\",\"contactInfo\":{\"SF_ContactId\":\"003HE00000ILrzpYAD\",\"SF_AccountId\":\"001HE00000Jq5AOYAZ\",\"mobileNumber\":\"7834567787\",\"Email\":\"aman@cccinfotech.com\",\"contactName\":\"Aman Singh\"},\"assetList\":[{\"warrantyType\":\"Standard Warranty\",\"SF_AccountId\":\"001HE00000Jq5AOYAZ\",\"serialNumber\":\"3434\",\"purchaseDate\":\"2026-06-15\",\"productId\":\"a04Bi000001RVQXIA4\",\"price\":0.00,\"assetName\":\"CCC test 1 model 1 - 3434\",\"assetId\":\"02iHE000008CE4DYAW\"}],\"accountInfo\":{\"SF_AccountId\":\"001HE00000Jq5AOYAZ\",\"pan\":\"FFFFF2222Z\",\"isDefaultAccount\":true,\"gstin\":\"09FFFFF2222Z4Z9\",\"billingAddress\":\"Sorkha Sector-115 Noida, 683, Uttar Pradesh, India - 201301\",\"accountName\":\"KFC Main\",\"accountCategory\":\"Direct\"}}"
+    }
+}

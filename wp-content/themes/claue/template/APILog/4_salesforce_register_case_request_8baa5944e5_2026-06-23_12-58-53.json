@@ -1,0 +1,14 @@
+{
+    "timestamp": "2026-06-23 12:58:53",
+    "request_id": "8baa5944e5",
+    "prefix": "4_salesforce_register_case_request",
+    "data": {
+        "accountId": "001HE00000IFon6YAD",
+        "contactId": "003HE00000GvdZsYAJ",
+        "assetId": "02iHE000007pjBxYAI",
+        "purpose": "Breakdown",
+        "priority": "Normal",
+        "callType": "Standard Warranty",
+        "description": "Demo"
+    }
+}

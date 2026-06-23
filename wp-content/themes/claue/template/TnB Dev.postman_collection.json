@@ -1,0 +1,233 @@
+{
+  "info": {
+    "_postman_id": "421c9853-17d8-4446-9441-af5c783375d1",
+    "name": "TnB Dev",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "27682348",
+    "_collection_link": "https://go.postman.co/collection/27682348-421c9853-17d8-4446-9441-af5c783375d1?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "oAuth",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/oauth2/token?grant_type=client_credentials&client_id=3MVG9LQU2EgIG3GDe3NLi5g2PkBG2WXN3Xevy9qCE0qCyVTnveY4NiwodJW2vlmZhfZ9qj0ktpOfVVAS9Qiwv&client_secret=7F7450008D27AE1220C78FF2D345B59CB34F5C07A04FF9AD712D31BB275E5FB8",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "oauth2",
+            "token"
+          ],
+          "query": [
+            {
+              "key": "grant_type",
+              "value": "client_credentials"
+            },
+            {
+              "key": "client_id",
+              "value": "3MVG9LQU2EgIG3GDe3NLi5g2PkBG2WXN3Xevy9qCE0qCyVTnveY4NiwodJW2vlmZhfZ9qj0ktpOfVVAS9Qiwv"
+            },
+            {
+              "key": "client_secret",
+              "value": "7F7450008D27AE1220C78FF2D345B59CB34F5C07A04FF9AD712D31BB275E5FB8"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "web_mobileSearch",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{access_token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "// Enter Contact Number\r\n{\r\n\"mobileNumber\":\"7619068517\"\r\n}\r\n",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/apexrest/web_mobileSearch",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "apexrest",
+            "web_mobileSearch"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "web_SearchByGSTPAN",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{access_token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "// Enter GSTIN or PAN\r\n{\r\n    \"gstinOrPan\": \"09FFFFF2222Z4Z1\"\r\n}\r\n\r\n\r\n",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/apexrest/web_searchByGSTPAN",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "apexrest",
+            "web_searchByGSTPAN"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "web_sendProduct",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{access_token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "// No Parameter required",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/apexrest/web_sendProduct",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "apexrest",
+            "web_sendProduct"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "web_serviceRequestStatus",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{access_token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "// Enter Contact Number\r\n{\r\n\"mobileNumber\":\"7619068517\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/apexrest/web_serviceRequestStatus",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "apexrest",
+            "web_serviceRequestStatus"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "web_RegisterCaseAccountAsset",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{access_token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "//  Scenario 1 -For only SR creation [ Account,Contact,Asset provided ID]\r\n// {\r\n//     \"contactId\": \"003HE00000Hh0W7YAJ\",\r\n//     \"accountId\": \"001HE00000IqCFhYAN\",\r\n//     \"assetId\": \"02iHE000007pjOrYAI\",\r\n//     \"purpose\": \"Breakdown\",\r\n//     \"priority\": \"Normal\",\r\n//     \"callType\": \"Under AMC\"\r\n// }\r\n\r\n\r\n\r\n//  Scenario 2 - For SR & Asset Creation [Account and contact ID provided]\r\n// {\r\n//     \"contactId\": \"003HE00000Hh0W7YAJ\",\r\n//     \"accountId\": \"001HE00000IqCFhYAN\",\r\n\r\n//     \"assetName\": \"Dell Laptop \",\r\n//     \"product2Id\": \"a04Bi000001RfJUIA0\",\r\n//     \"purchaseDate\": \"2026-05-26\",\r\n//     \"warrantyType\": \"Standard Warranty\",\r\n//     \"serialNumber\": \"SN123450\",\r\n//     \"price\": 55000,\r\n\r\n//     \"purpose\": \"Breakdown\",\r\n//     \"priority\": \"Normal\",\r\n//     \"callType\": \"Under AMC\"\r\n// }\r\n\r\n\r\n\r\n// Scenario 3 - For SR , Account ,Contact & Asset Creation\r\n{\r\n    \"accountName\": \"ABC testing Technologies253317\",\r\n    \"accountPhone\": \"99190839243\",\r\n    \"accountCategory\": \"Direct\",\r\n    \"gstin\": \"29ABCDE1234F1Z9\",\r\n    \"pan\": \"ABCDE1234t\",\r\n\r\n    \"billingStreet\": \"Vibhuti Khand 2\",\r\n    \"billingCity\": \"Lucknow\",\r\n    \"billingState\": \"Uttar Pradesh\",\r\n    \"billingCountry\": \"India\",\r\n    \"billingPostalCode\": \"226010\",\r\n\r\n    \"firstName\": \"Saurabh testing\",\r\n    \"lastName\": \"Pandey\",\r\n    \"contactPhone\": \"7619093674\",\r\n    \"contactEmail\": \"saurabh@test124.com\",\r\n\r\n    \"assetName\": \"HP Printer\",\r\n    \"product2Id\": \"a04Bi000001RfJUIA0\",\r\n    \"purchaseDate\": \"2026-05-26\",\r\n    \"warrantyType\": \"Standard Warranty\",\r\n    \"serialNumber\": \"HP998877\",\r\n    \"price\": 15000,\r\n\r\n    \"purpose\": \"Installation\",\r\n    \"priority\": \"High\",\r\n    \"callType\": \"Under AMC\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/apexrest/web_RegisterCaseAccountAsset",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "apexrest",
+            "web_RegisterCaseAccountAsset"
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "variable": [
+    {
+      "key": "salesforce_access_token_1cmf"
+    }
+  ]
+}

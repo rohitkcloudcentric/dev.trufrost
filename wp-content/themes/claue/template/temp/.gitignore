@@ -1,0 +1,18 @@
+# Sensitive configuration files
+config.php
+
+# Test files (optional - remove if you want to commit them)
+test-api.html
+
+# IDE files
+.vscode/
+.idea/
+*.sublime-*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+error_log

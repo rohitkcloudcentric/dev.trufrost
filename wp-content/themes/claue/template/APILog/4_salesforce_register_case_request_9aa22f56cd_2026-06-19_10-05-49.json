@@ -1,0 +1,14 @@
+{
+    "timestamp": "2026-06-19 10:05:49",
+    "request_id": "9aa22f56cd",
+    "prefix": "4_salesforce_register_case_request",
+    "data": {
+        "contactId": "003HE00000Hh0W7YAJ",
+        "accountId": "001HE00000IqCFhYAN",
+        "assetId": "02iHE000007pjOrYAI",
+        "purpose": "Breakdown",
+        "priority": "Normal",
+        "callType": "Service_Request",
+        "description": "Product Broken"
+    }
+}

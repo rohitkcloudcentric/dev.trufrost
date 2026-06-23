@@ -1,0 +1,12 @@
+{
+    "timestamp": "2026-06-19 12:19:50",
+    "request_id": "91524cfccf",
+    "prefix": "2_salesforce_mobile_search_response",
+    "data": {
+        "http_code": 200,
+        "curl_error": "",
+        "effective_url": "https://trufrostandbutler--qa.sandbox.my.salesforce.com/services/apexrest/web_mobileSearch",
+        "response": "{\"tagList\":[{\"tagName\":\", IN\",\"tagId\":\"a0OHE0000026DCj2AM\",\"status\":\"Requested\",\"serviceRequestId\":null,\"quantity\":1,\"productId\":\"a04HE000000oVRIYA2\",\"assetId\":null}],\"message\":\"Success\",\"contactInfo\":{\"SF_ContactId\":\"003HE00000Hh0W7YAJ\",\"SF_AccountId\":\"001HE00000IqCFhYAN\",\"mobileNumber\":\"7619068517\",\"mailingAddress\":\"Vibhuti Khand, Lucknow, Uttar Pradesh, India - 226010\",\"Email\":\"saurabhpandey27@gmail.com\",\"contactName\":\"Saurabh Pandey\"},\"assetList\":[{\"warrantyType\":\"Standard Warranty\",\"SF_AccountId\":\"001HE00000IqCFhYAN\",\"serialNumber\":\"3434\",\"purchaseDate\":\"2026-01-01\",\"productId\":\"a04Bi000001RfJUIA0\",\"price\":5500.00,\"assetName\":\"Trufrost Ice Machines\",\"assetId\":\"02iHE000007pjOrYAI\"},{\"warrantyType\":\"Standard Warranty\",\"SF_AccountId\":\"001HE00000IqCFhYAN\",\"serialNumber\":\"SN123450\",\"purchaseDate\":\"2026-05-26\",\"productId\":\"a04Bi000001RfJUIA0\",\"price\":55000.00,\"assetName\":\"Dell Laptop\",\"assetId\":\"02iHE0000083yRFYAY\"}],\"accountInfo\":{\"SF_AccountId\":\"001HE00000IqCFhYAN\",\"pan\":null,\"isDefaultAccount\":true,\"gstin\":null,\"billingAddress\":\", , , India - \",\"accountName\":\"KFC Main\",\"accountCategory\":\"Key Account\"}}",
+        "response_length": 1121
+    }
+}

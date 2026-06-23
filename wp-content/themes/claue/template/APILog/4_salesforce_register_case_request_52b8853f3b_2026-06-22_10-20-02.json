@@ -1,0 +1,31 @@
+{
+    "timestamp": "2026-06-22 10:20:02",
+    "request_id": "52b8853f3b",
+    "prefix": "4_salesforce_register_case_request",
+    "data": {
+        "accountName": "KFC Main",
+        "accountPhone": "8799789877",
+        "accountCategory": "Direct",
+        "gstin": "09FFFFF2222Z4Z8",
+        "pan": "FFFFF2222Z",
+        "billingStreet": "Sorkha Sector-115 Noida",
+        "billingCity": "683",
+        "billingState": "Uttar Pradesh",
+        "billingCountry": "India",
+        "billingPostalCode": "201301",
+        "firstName": "Rohit",
+        "lastName": "Kashyap",
+        "contactPhone": "8799789877",
+        "contactEmail": "rohitkcloudcentric@gmail.com",
+        "assetName": "CCC test 2",
+        "product2Id": "a04Bi000001RXH3IAO",
+        "purchaseDate": "2026-06-16",
+        "warrantyType": "Extended Warranty",
+        "serialNumber": "3436",
+        "price": 0,
+        "purpose": "Breakdown",
+        "priority": "Normal",
+        "callType": "Extended Warranty",
+        "description": "Demo testing"
+    }
+}

@@ -1,0 +1,19 @@
+{
+    "timestamp": "2026-06-22 10:16:04",
+    "request_id": "83b8bab66c",
+    "prefix": "4_salesforce_register_case_request",
+    "data": {
+        "accountId": "001HE00000Jq5AOYAZ",
+        "contactId": "003HE00000ILrzpYAD",
+        "assetName": "",
+        "product2Id": "a04Bi000001RXH3IAO",
+        "purchaseDate": "2026-06-16",
+        "warrantyType": "Extended Warranty",
+        "serialNumber": "sdfgtge56745",
+        "price": 0,
+        "purpose": "Installation",
+        "priority": "Normal",
+        "callType": "Extended Warranty",
+        "description": "Install Problem"
+    }
+}

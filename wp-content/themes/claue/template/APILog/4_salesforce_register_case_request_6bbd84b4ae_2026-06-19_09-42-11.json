@@ -1,0 +1,14 @@
+{
+    "timestamp": "2026-06-19 09:42:11",
+    "request_id": "6bbd84b4ae",
+    "prefix": "4_salesforce_register_case_request",
+    "data": {
+        "contactId": "003HE00000Hh0W7YAJ",
+        "accountId": "001HE00000IqCFhYAN",
+        "assetId": "02iHE000007pjOrYAI",
+        "purpose": "Breakdown",
+        "priority": "Normal",
+        "callType": "Regular",
+        "description": "Product Quality."
+    }
+}

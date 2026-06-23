@@ -1,0 +1,14 @@
+{
+    "timestamp": "2026-06-22 15:05:49",
+    "request_id": "3f12d6cdb1",
+    "prefix": "4_salesforce_register_case_request",
+    "data": {
+        "accountId": "001HE00000IFon6YAD",
+        "contactId": "003HE00000GvdZsYAJ",
+        "assetId": "02iHE000008AQkbYAG",
+        "purpose": "Installation",
+        "priority": "Normal",
+        "callType": "Extended Warranty",
+        "description": "Demo"
+    }
+}

@@ -1,0 +1,12 @@
+{
+    "timestamp": "2026-06-19 09:42:12",
+    "request_id": "6bbd84b4ae",
+    "prefix": "4_salesforce_register_case_response",
+    "data": {
+        "http_code": 500,
+        "curl_error": "",
+        "effective_url": "https://trufrostandbutler--qa.sandbox.my.salesforce.com/services/apexrest/web_RegisterCaseAccountAsset",
+        "response": "{\"status\":\"Failed\",\"parentSRId\":null,\"message\":\"Insert failed. First exception on row 0; first error: INVALID_OR_NULL_FOR_RESTRICTED_PICKLIST, Warranty Status: bad value for restricted picklist field: Regular: [Call_Type__c]\",\"contactId\":null,\"childSRId\":null,\"assetId\":null,\"accountId\":null}",
+        "response_length": 292
+    }
+}

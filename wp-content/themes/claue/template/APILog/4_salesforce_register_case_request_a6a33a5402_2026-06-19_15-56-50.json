@@ -1,0 +1,31 @@
+{
+    "timestamp": "2026-06-19 15:56:50",
+    "request_id": "a6a33a5402",
+    "prefix": "4_salesforce_register_case_request",
+    "data": {
+        "accountName": "KFC Main",
+        "accountPhone": "7834958344",
+        "accountCategory": "Direct",
+        "gstin": "09FFFFF2222Z8Z0",
+        "pan": "FFFFF2222Z",
+        "billingStreet": "Sorkha Sector-115 Noida",
+        "billingCity": "683",
+        "billingState": "Uttar Pradesh",
+        "billingCountry": "India",
+        "billingPostalCode": "201301",
+        "firstName": "Rohit",
+        "lastName": "Kashyap",
+        "contactPhone": "7834958344",
+        "contactEmail": "rohitkcloudcentric@gmail.com",
+        "assetName": "Product 009",
+        "product2Id": "a04Bi000001RfJZIA0",
+        "purchaseDate": "2026-06-17",
+        "warrantyType": "Standard Warranty",
+        "serialNumber": "3434",
+        "price": 0,
+        "purpose": "Breakdown",
+        "priority": "Normal",
+        "callType": "Standard Warranty",
+        "description": "Demo"
+    }
+}

@@ -1,0 +1,12 @@
+{
+    "timestamp": "2026-06-19 08:11:30",
+    "request_id": "03d9d14cd8",
+    "prefix": "1_salesforce_oauth_response",
+    "data": {
+        "http_code": 200,
+        "curl_error": "",
+        "effective_url": "https://trufrostandbutler--qa.sandbox.my.salesforce.com/services/oauth2/token",
+        "response": "{\"access_token\":\"00DHE000002RNll!AQEAQHHL46UV3Q5FDgs9yek7lWJfBEyrUNr8eZz_WdLjhYH7RYPHnKnExfoqaH2m8nstZ2VU4eD1EfMU1KVuOB1GREtqC872\",\"signature\":\"tXiYv03V76xjrdlXSETduYRRquVTkiI7K5/Ro9wYq14=\",\"scope\":\"api\",\"instance_url\":\"https://trufrostandbutler--qa.sandbox.my.salesforce.com\",\"id\":\"https://test.salesforce.com/id/00DHE000002RNll2AG/005HE000003rzq7YAA\",\"token_type\":\"Bearer\",\"issued_at\":\"1781849490898\"}",
+        "response_length": 403
+    }
+}

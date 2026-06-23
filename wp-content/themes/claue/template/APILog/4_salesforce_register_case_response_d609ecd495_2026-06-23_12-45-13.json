@@ -1,0 +1,12 @@
+{
+    "timestamp": "2026-06-23 12:45:13",
+    "request_id": "d609ecd495",
+    "prefix": "4_salesforce_register_case_response",
+    "data": {
+        "http_code": 200,
+        "curl_error": "",
+        "effective_url": "https://trufrostandbutler--qa.sandbox.my.salesforce.com/services/apexrest/web_RegisterCaseAccountAsset",
+        "response": "{\"status\":\"Success\",\"parentSRId\":\"500HE00000FpN76YAF\",\"message\":\"Service Request Created Successfully\",\"contactId\":\"003HE00000GvdZsYAJ\",\"childSRId\":\"500HE00000FpN77YAF\",\"CaseNumber\":null,\"assetId\":\"02iHE000007dmYdYAI\",\"accountId\":\"001HE00000IFon6YAD\"}",
+        "response_length": 251
+    }
+}

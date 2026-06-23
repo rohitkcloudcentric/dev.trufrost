@@ -1,0 +1,31 @@
+{
+    "timestamp": "2026-06-22 08:17:49",
+    "request_id": "f62c33b07f",
+    "prefix": "4_salesforce_register_case_request",
+    "data": {
+        "accountName": "KFC Main",
+        "accountPhone": "7834567787",
+        "accountCategory": "Direct",
+        "gstin": "09FFFFF2222Z4Z9",
+        "pan": "FFFFF2222Z",
+        "billingStreet": "Sorkha Sector-115 Noida",
+        "billingCity": "683",
+        "billingState": "Uttar Pradesh",
+        "billingCountry": "India",
+        "billingPostalCode": "201301",
+        "firstName": "Aman",
+        "lastName": "Singh",
+        "contactPhone": "7834567787",
+        "contactEmail": "aman@cccinfotech.com",
+        "assetName": "CCC test 1",
+        "product2Id": "a04Bi000001RVQXIA4",
+        "purchaseDate": "2026-06-15",
+        "warrantyType": "Standard Warranty",
+        "serialNumber": "3434",
+        "price": 0,
+        "purpose": "Breakdown",
+        "priority": "Normal",
+        "callType": "Standard Warranty",
+        "description": "Product is Breaked"
+    }
+}

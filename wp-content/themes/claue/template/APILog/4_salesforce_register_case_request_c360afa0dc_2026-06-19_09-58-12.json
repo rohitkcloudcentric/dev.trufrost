@@ -1,0 +1,14 @@
+{
+    "timestamp": "2026-06-19 09:58:12",
+    "request_id": "c360afa0dc",
+    "prefix": "4_salesforce_register_case_request",
+    "data": {
+        "contactId": "003HE00000Hh0W7YAJ",
+        "accountId": "001HE00000IqCFhYAN",
+        "assetId": "02iHE0000083yRFYAY",
+        "purpose": "Breakdown",
+        "priority": "Normal",
+        "callType": "Service Request",
+        "description": "Demo"
+    }
+}

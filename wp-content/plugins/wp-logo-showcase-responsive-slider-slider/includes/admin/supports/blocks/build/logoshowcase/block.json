@@ -1,0 +1,118 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "wpls/logoshowcase",
+  "version": "1.0",
+  "title": "Logo Slider",
+  "category": "essp_guten_block",
+  "icon": "images-alt2",
+  "description": "Display logo in a slider view with various layouts.",
+  "example": {},
+  "supports": {
+    "html": false,
+    "align": true,
+    "multiple": true
+  },
+  "textdomain": "wp-logo-showcase-responsive-slider-slider",
+  "editorScript": "file:./index.js",
+  "editorStyle": "file:./index.css",
+  "keywords": [
+    "essential",
+    "wpls logo slider",
+    "logoshowcase"
+  ],
+  "attributes": {
+    "limit": {
+      "type": "number",
+      "default": 15
+    },
+    "design": {
+      "type": "string",
+      "default": "design-1"
+    },
+    "cat_id": {
+      "type": "string",
+      "default": ""
+    },
+    "cat_name": {
+      "type": "string",
+      "default": ""
+    },
+    "slides_column": {
+      "type": "number",
+      "default": 4
+    },
+    "slides_scroll": {
+      "type": "number",
+      "default": 1
+    },
+    "dots": {
+      "type": "string",
+      "default": "true"
+    },
+    "arrows": {
+      "type": "string",
+      "default": "true"
+    },
+    "autoplay": {
+      "type": "string",
+      "default": "true"
+    },
+    "autoplay_interval": {
+      "type": "number",
+      "default": 3000
+    },
+    "speed": {
+      "type": "number",
+      "default": 600
+    },
+    "center_mode": {
+      "type": "string",
+      "default": "false"
+    },
+    "loop": {
+      "type": "string",
+      "default": "true"
+    },
+    "lazyload": {
+      "type": "string",
+      "default": ""
+    },
+    "link_target": {
+      "type": "string",
+      "default": "self"
+    },
+    "show_title": {
+      "type": "boolean",
+      "default": false
+    },
+    "image_size": {
+      "type": "string",
+      "default": "full"
+    },
+    "orderby": {
+      "type": "string",
+      "default": "date"
+    },
+    "order": {
+      "type": "string",
+      "default": "desc"
+    },
+    "hide_border": {
+      "type": "string",
+      "default": "true"
+    },
+    "max_height": {
+      "type": "number",
+      "default": 250
+    },
+    "align": {
+      "type": "string",
+      "default": ""
+    },
+    "className": {
+      "type": "string",
+      "default": ""
+    }
+  }
+}

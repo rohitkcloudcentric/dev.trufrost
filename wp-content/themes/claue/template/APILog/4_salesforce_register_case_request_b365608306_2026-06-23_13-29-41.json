@@ -1,0 +1,14 @@
+{
+    "timestamp": "2026-06-23 13:29:41",
+    "request_id": "b365608306",
+    "prefix": "4_salesforce_register_case_request",
+    "data": {
+        "accountId": "001HE00000IFon6YAD",
+        "contactId": "003HE00000GvdZsYAJ",
+        "assetId": "02iHE000007pjGnYAI",
+        "purpose": "PM Service",
+        "priority": "Normal",
+        "callType": "Under AMC",
+        "description": "Demo testing"
+    }
+}

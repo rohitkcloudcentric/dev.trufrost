@@ -1,0 +1,15 @@
+{
+    "timestamp": "2026-06-02 06:55:44",
+    "request_id": "a4f67a4636",
+    "prefix": "4_salesforce_register_case_request",
+    "data": {
+        "contactId": "003HE00000Hh0W7YAJ",
+        "accountId": "001HE00000J9hVzYAJ",
+        "assetId": "02iHE0000082oqXYAQ",
+        "serviceCategory": "Installation",
+        "priority": "Normal",
+        "callType": "Regular",
+        "gstin": "09AAACK1234A1Z5",
+        "pan": "AAACK1234A"
+    }
+}

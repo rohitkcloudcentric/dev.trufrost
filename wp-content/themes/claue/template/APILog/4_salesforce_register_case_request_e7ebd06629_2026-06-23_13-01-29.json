@@ -1,0 +1,19 @@
+{
+    "timestamp": "2026-06-23 13:01:29",
+    "request_id": "e7ebd06629",
+    "prefix": "4_salesforce_register_case_request",
+    "data": {
+        "accountId": "001HE00000IFon6YAD",
+        "contactId": "003HE00000GvdZsYAJ",
+        "billingStreet": "Sorkha Sector-115 Noida",
+        "billingCity": "Noida",
+        "billingState": "Uttar Pradesh",
+        "billingCountry": "India",
+        "billingPostalCode": "201301",
+        "assetId": "02iHE000007dmYdYAI",
+        "purpose": "PM_Service",
+        "priority": "Normal",
+        "callType": "Standard Warranty",
+        "description": "Demo"
+    }
+}

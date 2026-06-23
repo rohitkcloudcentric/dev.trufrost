@@ -1,0 +1,12 @@
+{
+    "timestamp": "2026-06-19 09:22:14",
+    "request_id": "6f223ec57b",
+    "prefix": "2_salesforce_mobile_search_response",
+    "data": {
+        "http_code": 404,
+        "curl_error": "",
+        "effective_url": "https://trufrostandbutler--qa.sandbox.my.salesforce.com/services/apexrest/web_mobileSearch",
+        "response": "{\"tagList\":null,\"message\":\"No Contact Found\",\"contactInfo\":null,\"assetList\":null,\"accountInfo\":null}",
+        "response_length": 100
+    }
+}

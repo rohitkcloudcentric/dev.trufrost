@@ -1,0 +1,1125 @@
+# Copyright (C) 2024 WP OnlineSupport, Essential Plugin
+# This file is distributed under the same license as the WP Logo Showcase Responsive Slider and Carousel plugin.
+msgid ""
+msgstr ""
+"Project-Id-Version: WP Logo Showcase Responsive Slider and Carousel 3.8\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/wp-logo-showcase-responsive-slider-slider\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2024-07-08T12:12:37+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.10.0\n"
+"X-Domain: wp-logo-showcase-responsive-slider-slider\n"
+
+#. Plugin Name of the plugin
+#: C:\laragon\www\testingserver\wp-content\plugins\wp-logo-showcase-responsive-slider-slider\logo-showcase.php
+msgid "WP Logo Showcase Responsive Slider and Carousel"
+msgstr ""
+
+#. Plugin URI of the plugin
+#. Author URI of the plugin
+#: C:\laragon\www\testingserver\wp-content\plugins\wp-logo-showcase-responsive-slider-slider\logo-showcase.php
+msgid "https://www.essentialplugin.com/wordpress-plugin/wp-logo-showcase-responsive-slider/"
+msgstr ""
+
+#. Description of the plugin
+#: C:\laragon\www\testingserver\wp-content\plugins\wp-logo-showcase-responsive-slider-slider\logo-showcase.php
+msgid "Easy to add and display Logo Showcase Responsive Slider on your website. Also added Gutenberg block support."
+msgstr ""
+
+#. Author of the plugin
+#: C:\laragon\www\testingserver\wp-content\plugins\wp-logo-showcase-responsive-slider-slider\logo-showcase.php
+msgid "WP OnlineSupport, Essential Plugin"
+msgstr ""
+
+#: includes/admin/class-wpls-admin.php:75
+msgid "How it works, our plugins and offers"
+msgstr ""
+
+#: includes/admin/class-wpls-admin.php:75
+#: includes/admin/settings/how-it-work.php:24
+msgid "How It Works"
+msgstr ""
+
+#: includes/admin/class-wpls-admin.php:78
+msgid "Overview - Logo Showcase Responsive Slider"
+msgstr ""
+
+#: includes/admin/class-wpls-admin.php:78
+msgid "Overview"
+msgstr ""
+
+#: includes/admin/class-wpls-admin.php:81
+msgid "Upgrade To PRO - Logo Showcase Responsive Slider"
+msgstr ""
+
+#: includes/admin/class-wpls-admin.php:81
+msgid "Upgrade To PRO"
+msgstr ""
+
+#: includes/admin/class-wpls-admin.php:119
+msgid "WP Logo Showcase Responsive Slider - Settings"
+msgstr ""
+
+#: includes/admin/class-wpls-admin.php:122
+msgid "More Premium - Settings"
+msgstr ""
+
+#: includes/admin/class-wpls-admin.php:188
+msgid "Category Shortcode"
+msgstr ""
+
+#: includes/admin/metabox/wpls-post-setting-metabox-pro.php:14
+#: includes/admin/metabox/wpls-post-setting-metabox.php:38
+#: includes/admin/metabox/wpls-post-setting-metabox.php:49
+msgid "Utilize this <a href=\"%s\" target=\"_blank\">Premium Features (With Risk-Free 30 days money back guarantee)</a> to get best of this plugin with Annual or Lifetime bundle deal."
+msgstr ""
+
+#: includes/admin/metabox/wpls-post-setting-metabox-pro.php:20
+msgid "Layouts"
+msgstr ""
+
+#: includes/admin/metabox/wpls-post-setting-metabox-pro.php:20
+#: includes/admin/metabox/wpls-post-setting-metabox-pro.php:29
+#: includes/admin/metabox/wpls-post-setting-metabox-pro.php:38
+#: includes/admin/metabox/wpls-post-setting-metabox-pro.php:47
+#: includes/admin/metabox/wpls-post-setting-metabox-pro.php:56
+#: includes/admin/metabox/wpls-post-setting-metabox-pro.php:65
+#: includes/admin/metabox/wpls-post-setting-metabox-pro.php:74
+#: includes/admin/metabox/wpls-post-setting-metabox-pro.php:83
+#: includes/admin/metabox/wpls-post-setting-metabox.php:33
+#: includes/admin/metabox/wpls-post-setting-metabox.php:44
+msgid "PRO"
+msgstr ""
+
+#: includes/admin/metabox/wpls-post-setting-metabox-pro.php:23
+msgid "6 (Grid,  Slider, Center, List, Ticker and Filter ). In lite version only Slider and Center layout."
+msgstr ""
+
+#: includes/admin/metabox/wpls-post-setting-metabox-pro.php:29
+#: includes/admin/settings/solution-features/basicpro-tab.php:49
+msgid "Designs"
+msgstr ""
+
+#: includes/admin/metabox/wpls-post-setting-metabox-pro.php:32
+msgid "In lite version only one design."
+msgstr ""
+
+#: includes/admin/metabox/wpls-post-setting-metabox-pro.php:38
+#: includes/admin/settings/solution-features/basicpro-tab.php:64
+msgid "WP Templating Features"
+msgstr ""
+
+#: includes/admin/metabox/wpls-post-setting-metabox-pro.php:41
+#: includes/admin/settings/solution-features/basicpro-tab.php:64
+msgid "You can modify plugin html/designs in your current theme."
+msgstr ""
+
+#: includes/admin/metabox/wpls-post-setting-metabox-pro.php:47
+#: includes/admin/settings/solution-features/basicpro-tab.php:74
+msgid "Shortcode Generator"
+msgstr ""
+
+#: includes/admin/metabox/wpls-post-setting-metabox-pro.php:50
+msgid "Play with all shortcode parameters with preview panel. No documentation required."
+msgstr ""
+
+#: includes/admin/metabox/wpls-post-setting-metabox-pro.php:56
+#: includes/admin/settings/solution-features/basicpro-tab.php:84
+msgid "Tooltip"
+msgstr ""
+
+#: includes/admin/metabox/wpls-post-setting-metabox-pro.php:59
+#: includes/admin/settings/solution-features/basicpro-tab.php:84
+msgid "Enable tooltip on logo."
+msgstr ""
+
+#: includes/admin/metabox/wpls-post-setting-metabox-pro.php:65
+#: includes/admin/settings/solution-features/basicpro-tab.php:100
+msgid "Drag & Drop Slide Order Change"
+msgstr ""
+
+#: includes/admin/metabox/wpls-post-setting-metabox-pro.php:68
+msgid "Arrange your desired slides with your desired order and display."
+msgstr ""
+
+#: includes/admin/metabox/wpls-post-setting-metabox-pro.php:74
+msgid "Page Builder Support"
+msgstr ""
+
+#: includes/admin/metabox/wpls-post-setting-metabox-pro.php:77
+msgid "Gutenberg Block, Elementor, Bevear Builder, SiteOrigin, Divi, Visual Composer and Fusion Page Builder Support"
+msgstr ""
+
+#: includes/admin/metabox/wpls-post-setting-metabox-pro.php:83
+msgid "Exclude Logos and Exclude Some Categories"
+msgstr ""
+
+#: includes/admin/metabox/wpls-post-setting-metabox-pro.php:86
+msgid "Do not display the logos & Do not display the logos for particular categories."
+msgstr ""
+
+#: includes/admin/metabox/wpls-post-setting-metabox.php:23
+msgid "Logo Link"
+msgstr ""
+
+#: includes/admin/metabox/wpls-post-setting-metabox.php:27
+msgid "Enter link URL for logo. i.e."
+msgstr ""
+
+#: includes/admin/metabox/wpls-post-setting-metabox.php:33
+msgid "Logo Description"
+msgstr ""
+
+#: includes/admin/metabox/wpls-post-setting-metabox.php:37
+msgid "Enter logo description using default wordpress content editor."
+msgstr ""
+
+#: includes/admin/metabox/wpls-post-setting-metabox.php:44
+msgid "Logo Image URL"
+msgstr ""
+
+#: includes/admin/metabox/wpls-post-setting-metabox.php:48
+msgid "Enter external URL of logo. If you don not want to use an image from your media gallery, you can set an URL for logo image here."
+msgstr ""
+
+#: includes/admin/settings/how-it-work.php:34
+msgid "How It Works - Display and shortcode"
+msgstr ""
+
+#: includes/admin/settings/how-it-work.php:42
+msgid "Getting Started"
+msgstr ""
+
+#: includes/admin/settings/how-it-work.php:46
+msgid "Step-1. Go to \"Logo Showcase --> Add New\"."
+msgstr ""
+
+#: includes/admin/settings/how-it-work.php:47
+msgid "Step-2. Add logo title, logo link to redirect(if need) and logo image under featured image section."
+msgstr ""
+
+#: includes/admin/settings/how-it-work.php:48
+msgid "Step-3. Display multiple logo showcase, create categories under \"Logo Showcase --> Logo Category\" and create categories."
+msgstr ""
+
+#: includes/admin/settings/how-it-work.php:49
+msgid "Step-4. Assign logo showcase post to respective categories and use the category shortcode under \"Logo Showcase --> Logo Category\""
+msgstr ""
+
+#: includes/admin/settings/how-it-work.php:56
+msgid "How Shortcode Works"
+msgstr ""
+
+#: includes/admin/settings/how-it-work.php:60
+msgid "Step-1. Create a page like Logo Showcase OR add the shortcode in any page."
+msgstr ""
+
+#: includes/admin/settings/how-it-work.php:61
+msgid "Step-2. Put below shortcode as per your need."
+msgstr ""
+
+#: includes/admin/settings/how-it-work.php:68
+msgid "All Shortcodes"
+msgstr ""
+
+#: includes/admin/settings/how-it-work.php:71
+msgid "Logo Showcase Slider Shortcode"
+msgstr ""
+
+#: includes/admin/settings/how-it-work.php:72
+msgid "Logo Showcase Slider with Center Mode Shortcode"
+msgstr ""
+
+#: includes/admin/settings/how-it-work.php:73
+msgid "Logo Showcase slider limit -1 to display all logos, by default display only 15 logos."
+msgstr ""
+
+#: includes/admin/settings/how-it-work.php:78
+msgid "Documentation"
+msgstr ""
+
+#: includes/admin/settings/how-it-work.php:81
+msgid "Check Documentation"
+msgstr ""
+
+#: includes/admin/settings/how-it-work.php:86
+msgid "Demo"
+msgstr ""
+
+#: includes/admin/settings/how-it-work.php:89
+msgid "Check Free Demo"
+msgstr ""
+
+#: includes/admin/settings/how-it-work.php:102
+msgid "Gutenberg Support"
+msgstr ""
+
+#: includes/admin/settings/how-it-work.php:110
+msgid "How it Work"
+msgstr ""
+
+#: includes/admin/settings/how-it-work.php:114
+msgid "Step-1. Go to the Gutenberg editor of your page."
+msgstr ""
+
+#: includes/admin/settings/how-it-work.php:115
+msgid "Step-2. Search \"logoshowcase\" keyword in the Gutenberg block list."
+msgstr ""
+
+#: includes/admin/settings/how-it-work.php:116
+msgid "Step-3. Add any block of logoshowcase and you will find its relative options on the right end side."
+msgstr ""
+
+#: includes/admin/settings/how-it-work.php:131
+msgid "Help to improve this plugin!"
+msgstr ""
+
+#: includes/admin/settings/how-it-work.php:135
+msgid "Enjoyed this plugin? You can help by rate this plugin"
+msgstr ""
+
+#: includes/admin/settings/how-it-work.php:135
+msgid "5 stars!"
+msgstr ""
+
+#: includes/admin/settings/how-it-work.php:147
+msgid "Logo Showcase Premium Features"
+msgstr ""
+
+#: includes/admin/settings/how-it-work.php:152
+msgid "15+ predefined template for logo showcase."
+msgstr ""
+
+#: includes/admin/settings/how-it-work.php:153
+msgid "3 shortcodes [logoshowcase], [logo_grid] and [logo_filter]"
+msgstr ""
+
+#: includes/admin/settings/how-it-work.php:154
+msgid "Drag & Drop order change"
+msgstr ""
+
+#: includes/admin/settings/how-it-work.php:155
+msgid "Display logo showcase in a grid view."
+msgstr ""
+
+#: includes/admin/settings/how-it-work.php:156
+msgid "Display logo with filtration."
+msgstr ""
+
+#: includes/admin/settings/how-it-work.php:157
+msgid "Display logo showcase in slider view"
+msgstr ""
+
+#: includes/admin/settings/how-it-work.php:158
+msgid "Display logo showcase in center mode view"
+msgstr ""
+
+#: includes/admin/settings/how-it-work.php:159
+msgid "Logo showcase with ticker mode"
+msgstr ""
+
+#: includes/admin/settings/how-it-work.php:160
+msgid "2 Widgets- slider and grid view."
+msgstr ""
+
+#: includes/admin/settings/how-it-work.php:161
+msgid "Display Logo with title and description"
+msgstr ""
+
+#: includes/admin/settings/how-it-work.php:162
+msgid "Slider RTL support."
+msgstr ""
+
+#: includes/admin/settings/how-it-work.php:163
+msgid "Display logo showcase categories wise."
+msgstr ""
+
+#: includes/admin/settings/how-it-work.php:164
+msgid "Set image size for logo among WordPress image size."
+msgstr ""
+
+#: includes/admin/settings/how-it-work.php:165
+msgid "Visual Composer support."
+msgstr ""
+
+#: includes/admin/settings/how-it-work.php:166
+msgid "Gutenberg, Elementor, Beaver and SiteOrigin Page Builder Support."
+msgstr ""
+
+#: includes/admin/settings/how-it-work.php:167
+msgid "Divi Page Builder Native Support."
+msgstr ""
+
+#: includes/admin/settings/how-it-work.php:168
+msgid "Fusion Page Builder (Avada) native support."
+msgstr ""
+
+#: includes/admin/settings/how-it-work.php:169
+msgid "Logo Showcase with tool-tip with 5 tool-tip theme and various parameters."
+msgstr ""
+
+#: includes/admin/settings/how-it-work.php:170
+msgid "Custom CSS option"
+msgstr ""
+
+#: includes/admin/settings/how-it-work.php:171
+msgid "Fully responsive"
+msgstr ""
+
+#: includes/admin/settings/how-it-work.php:172
+msgid "100% Multi language"
+msgstr ""
+
+#: includes/admin/settings/how-it-work.php:174
+msgid "Gain access to"
+msgstr ""
+
+#: includes/admin/settings/how-it-work.php:174
+msgid "Logo Showcase Responsive Slider"
+msgstr ""
+
+#: includes/admin/settings/how-it-work.php:175
+msgid "Grab Logo Showcase Now"
+msgstr ""
+
+#: includes/admin/settings/solution-features/basicpro-tab.php:39
+msgid "Free"
+msgstr ""
+
+#: includes/admin/settings/solution-features/basicpro-tab.php:42
+msgid "Premium"
+msgstr ""
+
+#: includes/admin/settings/solution-features/basicpro-tab.php:49
+msgid "Designs that make your website better"
+msgstr ""
+
+#: includes/admin/settings/solution-features/basicpro-tab.php:54
+msgid "Shortcodes"
+msgstr ""
+
+#: includes/admin/settings/solution-features/basicpro-tab.php:54
+msgid "Shortcode provide output to the front-end side"
+msgstr ""
+
+#: includes/admin/settings/solution-features/basicpro-tab.php:59
+msgid "Shortcode Parameters"
+msgstr ""
+
+#: includes/admin/settings/solution-features/basicpro-tab.php:59
+msgid "Add extra power to the shortcode"
+msgstr ""
+
+#: includes/admin/settings/solution-features/basicpro-tab.php:69
+#: includes/admin/supports/blocks/build/logoshowcase/index.js:1
+msgid "Center Mode"
+msgstr ""
+
+#: includes/admin/settings/solution-features/basicpro-tab.php:69
+msgid "Display slider with center mode."
+msgstr ""
+
+#: includes/admin/settings/solution-features/basicpro-tab.php:74
+msgid "Play with all shortcode parameters with preview panel. No documentation required!!"
+msgstr ""
+
+#: includes/admin/settings/solution-features/basicpro-tab.php:79
+msgid "Option Show/Hide Title"
+msgstr ""
+
+#: includes/admin/settings/solution-features/basicpro-tab.php:79
+msgid "Display logo title"
+msgstr ""
+
+#: includes/admin/settings/solution-features/basicpro-tab.php:89
+msgid "Animation"
+msgstr ""
+
+#: includes/admin/settings/solution-features/basicpro-tab.php:89
+#: includes/admin/settings/solution-features/basicpro-tab.php:94
+msgid "Enable animation effect on logo"
+msgstr ""
+
+#: includes/admin/settings/solution-features/basicpro-tab.php:94
+msgid "Animation Type"
+msgstr ""
+
+#: includes/admin/settings/solution-features/basicpro-tab.php:100
+msgid "Arrange your desired slides with your desired order and display"
+msgstr ""
+
+#: includes/admin/settings/solution-features/basicpro-tab.php:106
+msgid "Loop Control for slider"
+msgstr ""
+
+#: includes/admin/settings/solution-features/basicpro-tab.php:106
+msgid "Infinite scroll control"
+msgstr ""
+
+#: includes/admin/settings/solution-features/basicpro-tab.php:111
+msgid "Lazyload Support"
+msgstr ""
+
+#: includes/admin/settings/solution-features/basicpro-tab.php:111
+msgid "Add lazyload support for image."
+msgstr ""
+
+#: includes/admin/settings/solution-features/basicpro-tab.php:116
+msgid "Gutenberg Block Supports"
+msgstr ""
+
+#: includes/admin/settings/solution-features/basicpro-tab.php:116
+msgid "Use this plugin with Gutenberg easily"
+msgstr ""
+
+#: includes/admin/settings/solution-features/basicpro-tab.php:121
+msgid "Elementor Page Builder Support"
+msgstr ""
+
+#: includes/admin/settings/solution-features/basicpro-tab.php:121
+msgid "Use this plugin with Elementor easily"
+msgstr ""
+
+#: includes/admin/settings/solution-features/basicpro-tab.php:126
+msgid "Bevear Builder Support"
+msgstr ""
+
+#: includes/admin/settings/solution-features/basicpro-tab.php:126
+msgid "Use this plugin with Bevear Builder easily"
+msgstr ""
+
+#: includes/admin/settings/solution-features/basicpro-tab.php:131
+msgid "SiteOrigin Page Builder Support"
+msgstr ""
+
+#: includes/admin/settings/solution-features/basicpro-tab.php:131
+msgid "Use this plugin with SiteOrigin easily"
+msgstr ""
+
+#: includes/admin/settings/solution-features/basicpro-tab.php:136
+msgid "Divi Page Builder Native Support"
+msgstr ""
+
+#: includes/admin/settings/solution-features/basicpro-tab.php:136
+msgid "Use this plugin with Divi Builder easily"
+msgstr ""
+
+#: includes/admin/settings/solution-features/basicpro-tab.php:141
+msgid "Fusion Page Builder (Avada) native support"
+msgstr ""
+
+#: includes/admin/settings/solution-features/basicpro-tab.php:141
+msgid "Use this plugin with Fusion( Avada ) Builder easily"
+msgstr ""
+
+#: includes/admin/settings/solution-features/basicpro-tab.php:146
+msgid "Visual Composer Page Builder Supports"
+msgstr ""
+
+#: includes/admin/settings/solution-features/basicpro-tab.php:146
+msgid "Use this plugin with Visual Composer easily"
+msgstr ""
+
+#: includes/admin/settings/solution-features/basicpro-tab.php:152
+msgid "Display logos for Particular Categories"
+msgstr ""
+
+#: includes/admin/settings/solution-features/basicpro-tab.php:152
+msgid "Display only logos with particular category"
+msgstr ""
+
+#: includes/admin/settings/solution-features/basicpro-tab.php:157
+msgid "Exclude Logos"
+msgstr ""
+
+#: includes/admin/settings/solution-features/basicpro-tab.php:157
+msgid "Do not display the logos you want"
+msgstr ""
+
+#: includes/admin/settings/solution-features/basicpro-tab.php:162
+msgid "Exclude Some Categories"
+msgstr ""
+
+#: includes/admin/settings/solution-features/basicpro-tab.php:162
+msgid "Do not display the logos for particular categories"
+msgstr ""
+
+#: includes/admin/settings/solution-features/basicpro-tab.php:167
+msgid "Logo Order / Order By Parameters"
+msgstr ""
+
+#: includes/admin/settings/solution-features/basicpro-tab.php:167
+msgid "Display logo according to date, title and etc"
+msgstr ""
+
+#: includes/admin/settings/solution-features/basicpro-tab.php:172
+msgid "Multiple Slider Parameters"
+msgstr ""
+
+#: includes/admin/settings/solution-features/basicpro-tab.php:172
+msgid "Slider parameters like autoplay, number of slide, sider dots and etc."
+msgstr ""
+
+#: includes/admin/settings/solution-features/basicpro-tab.php:177
+msgid "Slider RTL Support"
+msgstr ""
+
+#: includes/admin/settings/solution-features/basicpro-tab.php:177
+msgid "Slider supports for RTL website"
+msgstr ""
+
+#: includes/admin/settings/solution-features/basicpro-tab.php:182
+msgid "Automatic Update"
+msgstr ""
+
+#: includes/admin/settings/solution-features/basicpro-tab.php:182
+msgid "Get automatic  plugin updates"
+msgstr ""
+
+#: includes/admin/settings/solution-features/basicpro-tab.php:183
+#: includes/admin/settings/solution-features/basicpro-tab.php:184
+msgid "Lifetime"
+msgstr ""
+
+#: includes/admin/settings/solution-features/basicpro-tab.php:187
+msgid "Support"
+msgstr ""
+
+#: includes/admin/settings/solution-features/basicpro-tab.php:187
+msgid "Get support for plugin"
+msgstr ""
+
+#: includes/admin/settings/solution-features/basicpro-tab.php:188
+msgid "Limited"
+msgstr ""
+
+#: includes/admin/settings/solution-features/basicpro-tab.php:189
+msgid "1 Year"
+msgstr ""
+
+#: includes/admin/supports/blocks/gutenberg-block.php:72
+msgid "Essential Plugin Blocks"
+msgstr ""
+
+#: includes/wpls-functions.php:104
+#: includes/admin/supports/blocks/build/logoshowcase/index.js:1
+msgid "Design 1"
+msgstr ""
+
+#: includes/wpls-post-types.php:21
+#: includes/wpls-post-types.php:22
+#: includes/wpls-post-types.php:33
+msgid "Logo Showcase"
+msgstr ""
+
+#: includes/wpls-post-types.php:23
+msgid "Add New"
+msgstr ""
+
+#: includes/wpls-post-types.php:24
+msgid "Add New Logo Showcase"
+msgstr ""
+
+#: includes/wpls-post-types.php:25
+msgid "Edit Logo Showcase"
+msgstr ""
+
+#: includes/wpls-post-types.php:26
+msgid "New Logo Showcase"
+msgstr ""
+
+#: includes/wpls-post-types.php:27
+msgid "All Logo Showcase"
+msgstr ""
+
+#: includes/wpls-post-types.php:28
+msgid "View Logo Showcase"
+msgstr ""
+
+#: includes/wpls-post-types.php:29
+msgid "Search Logo Showcase"
+msgstr ""
+
+#: includes/wpls-post-types.php:30
+msgid "No Logo Showcase found"
+msgstr ""
+
+#: includes/wpls-post-types.php:31
+msgid "No Logo Showcase found in Trash"
+msgstr ""
+
+#: includes/wpls-post-types.php:34
+msgid "Logo Image"
+msgstr ""
+
+#: includes/wpls-post-types.php:35
+msgid "Set Logo Image"
+msgstr ""
+
+#: includes/wpls-post-types.php:36
+msgid "Remove logo image"
+msgstr ""
+
+#: includes/wpls-post-types.php:37
+msgid "Use as logo image"
+msgstr ""
+
+#: includes/wpls-post-types.php:66
+#: includes/wpls-post-types.php:67
+#: includes/wpls-post-types.php:76
+msgid "Logo Category"
+msgstr ""
+
+#: includes/wpls-post-types.php:68
+msgid "Search Category"
+msgstr ""
+
+#: includes/wpls-post-types.php:69
+msgid "All Category"
+msgstr ""
+
+#: includes/wpls-post-types.php:70
+msgid "Parent Category"
+msgstr ""
+
+#: includes/wpls-post-types.php:71
+msgid "Parent Category:"
+msgstr ""
+
+#: includes/wpls-post-types.php:72
+msgid "Edit Category"
+msgstr ""
+
+#: includes/wpls-post-types.php:73
+msgid "Update Category"
+msgstr ""
+
+#: includes/wpls-post-types.php:74
+msgid "Add New Category"
+msgstr ""
+
+#: includes/wpls-post-types.php:75
+msgid "New Category Name"
+msgstr ""
+
+#: includes/wpls-post-types.php:107
+#: includes/wpls-post-types.php:110
+msgid "Logo Showcase updated."
+msgstr ""
+
+#: includes/wpls-post-types.php:108
+msgid "Custom field updated."
+msgstr ""
+
+#: includes/wpls-post-types.php:109
+msgid "Custom field deleted."
+msgstr ""
+
+#: includes/wpls-post-types.php:111
+msgid "Logo Showcase restored to revision from %s"
+msgstr ""
+
+#: includes/wpls-post-types.php:112
+msgid "Logo Showcase published."
+msgstr ""
+
+#: includes/wpls-post-types.php:113
+msgid "Logo Showcase saved."
+msgstr ""
+
+#: includes/wpls-post-types.php:114
+msgid "Logo Showcase submitted."
+msgstr ""
+
+#: includes/wpls-post-types.php:115
+msgid "Logo Showcase scheduled for: <strong>%1$s</strong>."
+msgstr ""
+
+#: includes/wpls-post-types.php:117
+msgid "Logo Showcase draft updated."
+msgstr ""
+
+#: logo-showcase.php:178
+msgid "Thank you for activating %s"
+msgstr ""
+
+#: logo-showcase.php:179
+msgid "It looks like you had PRO version %s of this plugin activated. To avoid conflicts the extra version has been deactivated and we recommend you delete it."
+msgstr ""
+
+#: includes/admin/supports/blocks/build/logoshowcase/index.js:1
+msgid "Descending"
+msgstr ""
+
+#: includes/admin/supports/blocks/build/logoshowcase/index.js:1
+msgid "Ascending"
+msgstr ""
+
+#: includes/admin/supports/blocks/build/logoshowcase/index.js:1
+msgid "Select Lazyload"
+msgstr ""
+
+#: includes/admin/supports/blocks/build/logoshowcase/index.js:1
+msgid "Ondemand"
+msgstr ""
+
+#: includes/admin/supports/blocks/build/logoshowcase/index.js:1
+msgid "Progressive"
+msgstr ""
+
+#: includes/admin/supports/blocks/build/logoshowcase/index.js:1
+msgid "Post Date"
+msgstr ""
+
+#: includes/admin/supports/blocks/build/logoshowcase/index.js:1
+msgid "Post Modified Date"
+msgstr ""
+
+#: includes/admin/supports/blocks/build/logoshowcase/index.js:1
+msgid "Post Title"
+msgstr ""
+
+#: includes/admin/supports/blocks/build/logoshowcase/index.js:1
+msgid "Post Slug"
+msgstr ""
+
+#: includes/admin/supports/blocks/build/logoshowcase/index.js:1
+msgid "Post ID"
+msgstr ""
+
+#: includes/admin/supports/blocks/build/logoshowcase/index.js:1
+msgid "Random"
+msgstr ""
+
+#: includes/admin/supports/blocks/build/logoshowcase/index.js:1
+msgid "Same Window"
+msgstr ""
+
+#: includes/admin/supports/blocks/build/logoshowcase/index.js:1
+msgid "New Window"
+msgstr ""
+
+#: includes/admin/supports/blocks/build/logoshowcase/index.js:1
+msgid "True"
+msgstr ""
+
+#: includes/admin/supports/blocks/build/logoshowcase/index.js:1
+msgid "False"
+msgstr ""
+
+#: includes/admin/supports/blocks/build/logoshowcase/index.js:1
+msgid "General Parameters"
+msgstr ""
+
+#: includes/admin/supports/blocks/build/logoshowcase/index.js:1
+msgid "Logo Showcase Heading"
+msgstr ""
+
+#: includes/admin/supports/blocks/build/logoshowcase/index.js:1
+msgid "Enter Logo Heading."
+msgstr ""
+
+#: includes/admin/supports/blocks/build/logoshowcase/index.js:1
+msgid "Design"
+msgstr ""
+
+#: includes/admin/supports/blocks/build/logoshowcase/index.js:1
+msgid "Show Title"
+msgstr ""
+
+#: includes/admin/supports/blocks/build/logoshowcase/index.js:1
+msgid "Link Behaviour"
+msgstr ""
+
+#: includes/admin/supports/blocks/build/logoshowcase/index.js:1
+msgid "Choose link bahaviour. Upgrade to "
+msgstr ""
+
+#: includes/admin/supports/blocks/build/logoshowcase/index.js:1
+msgid "Premium version"
+msgstr ""
+
+#: includes/admin/supports/blocks/build/logoshowcase/index.js:1
+msgid "to get this option."
+msgstr ""
+
+#: includes/admin/supports/blocks/build/logoshowcase/index.js:1
+msgid "Media Size"
+msgstr ""
+
+#: includes/admin/supports/blocks/build/logoshowcase/index.js:1
+msgid "Choose WordPress registered image size. e.g original, large, medium, thumbnail."
+msgstr ""
+
+#: includes/admin/supports/blocks/build/logoshowcase/index.js:1
+msgid "Hide Border"
+msgstr ""
+
+#: includes/admin/supports/blocks/build/logoshowcase/index.js:1
+msgid "Choose option to hide logo border."
+msgstr ""
+
+#: includes/admin/supports/blocks/build/logoshowcase/index.js:1
+msgid "Max Height"
+msgstr ""
+
+#: includes/admin/supports/blocks/build/logoshowcase/index.js:1
+msgid "Enter image maximum height 80px with 100% maximum width for better output. By default value is \"250\"."
+msgstr ""
+
+#: includes/admin/supports/blocks/build/logoshowcase/index.js:1
+msgid "Show Tooltip"
+msgstr ""
+
+#: includes/admin/supports/blocks/build/logoshowcase/index.js:1
+msgid "Choose option to enable/disable tooltip on logo. Upgrade to "
+msgstr ""
+
+#: includes/admin/supports/blocks/build/logoshowcase/index.js:1
+msgid "Content Words Limit"
+msgstr ""
+
+#: includes/admin/supports/blocks/build/logoshowcase/index.js:1
+msgid "Enter content word limit. Upgrade to "
+msgstr ""
+
+#: includes/admin/supports/blocks/build/logoshowcase/index.js:1
+msgid "Content Tail"
+msgstr ""
+
+#: includes/admin/supports/blocks/build/logoshowcase/index.js:1
+msgid "Display dots after the post content as continue reading. Upgrade to "
+msgstr ""
+
+#: includes/admin/supports/blocks/build/logoshowcase/index.js:1
+msgid "Link"
+msgstr ""
+
+#: includes/admin/supports/blocks/build/logoshowcase/index.js:1
+msgid "Display link. Upgrade to "
+msgstr ""
+
+#: includes/admin/supports/blocks/build/logoshowcase/index.js:1
+msgid "Animation Effect"
+msgstr ""
+
+#: includes/admin/supports/blocks/build/logoshowcase/index.js:1
+msgid "Select Animation Effect"
+msgstr ""
+
+#: includes/admin/supports/blocks/build/logoshowcase/index.js:1
+msgid "Choose to manage diffrent type of animation effect of logos list. Upgrade to "
+msgstr ""
+
+#: includes/admin/supports/blocks/build/logoshowcase/index.js:1
+msgid "Slider Parameters"
+msgstr ""
+
+#: includes/admin/supports/blocks/build/logoshowcase/index.js:1
+msgid "Slides Column"
+msgstr ""
+
+#: includes/admin/supports/blocks/build/logoshowcase/index.js:1
+msgid "Enter number for slide to show at a time."
+msgstr ""
+
+#: includes/admin/supports/blocks/build/logoshowcase/index.js:1
+msgid "Slides Scroll"
+msgstr ""
+
+#: includes/admin/supports/blocks/build/logoshowcase/index.js:1
+msgid "Enter number of slide to scroll at a time."
+msgstr ""
+
+#: includes/admin/supports/blocks/build/logoshowcase/index.js:1
+msgid "Dots"
+msgstr ""
+
+#: includes/admin/supports/blocks/build/logoshowcase/index.js:1
+msgid "Show pagination dots."
+msgstr ""
+
+#: includes/admin/supports/blocks/build/logoshowcase/index.js:1
+msgid "Arrows"
+msgstr ""
+
+#: includes/admin/supports/blocks/build/logoshowcase/index.js:1
+msgid "Show prev - next arrows."
+msgstr ""
+
+#: includes/admin/supports/blocks/build/logoshowcase/index.js:1
+msgid "Autoplay"
+msgstr ""
+
+#: includes/admin/supports/blocks/build/logoshowcase/index.js:1
+msgid "Autoplay Interval"
+msgstr ""
+
+#: includes/admin/supports/blocks/build/logoshowcase/index.js:1
+msgid "Enter autoplay interval speed."
+msgstr ""
+
+#: includes/admin/supports/blocks/build/logoshowcase/index.js:1
+msgid "Speed"
+msgstr ""
+
+#: includes/admin/supports/blocks/build/logoshowcase/index.js:1
+msgid "Enter slide speed."
+msgstr ""
+
+#: includes/admin/supports/blocks/build/logoshowcase/index.js:1
+msgid "Enable slider center mode effect."
+msgstr ""
+
+#: includes/admin/supports/blocks/build/logoshowcase/index.js:1
+msgid "Infinite Loop"
+msgstr ""
+
+#: includes/admin/supports/blocks/build/logoshowcase/index.js:1
+msgid "Enable infinite loop for continuous sliding."
+msgstr ""
+
+#: includes/admin/supports/blocks/build/logoshowcase/index.js:1
+msgid "Slides Rows"
+msgstr ""
+
+#: includes/admin/supports/blocks/build/logoshowcase/index.js:1
+msgid "Enter number of rows for slider. Upgrade to "
+msgstr ""
+
+#: includes/admin/supports/blocks/build/logoshowcase/index.js:1
+msgid "Ticker Mode"
+msgstr ""
+
+#: includes/admin/supports/blocks/build/logoshowcase/index.js:1
+msgid "Enable ticker mode for slider. Note: When you enable ticker mode Autoplay, Slides Scroll and Autoplay Interval will set to default. Upgrade to "
+msgstr ""
+
+#: includes/admin/supports/blocks/build/logoshowcase/index.js:1
+msgid "Pause On Hover"
+msgstr ""
+
+#: includes/admin/supports/blocks/build/logoshowcase/index.js:1
+msgid "Pause slider autoplay on hover. Upgrade to "
+msgstr ""
+
+#: includes/admin/supports/blocks/build/logoshowcase/index.js:1
+msgid "Pause On Focus"
+msgstr ""
+
+#: includes/admin/supports/blocks/build/logoshowcase/index.js:1
+msgid "Pause slider autoplay when slider element is focused. Upgrade to "
+msgstr ""
+
+#: includes/admin/supports/blocks/build/logoshowcase/index.js:1
+msgid "Query Parameters"
+msgstr ""
+
+#: includes/admin/supports/blocks/build/logoshowcase/index.js:1
+msgid "Limit"
+msgstr ""
+
+#: includes/admin/supports/blocks/build/logoshowcase/index.js:1
+msgid "Enter number of logos to be displayed. Enter -1 to display all."
+msgstr ""
+
+#: includes/admin/supports/blocks/build/logoshowcase/index.js:1
+msgid "Order By"
+msgstr ""
+
+#: includes/admin/supports/blocks/build/logoshowcase/index.js:1
+msgid "Order"
+msgstr ""
+
+#: includes/admin/supports/blocks/build/logoshowcase/index.js:1
+msgid "Display Specific Category"
+msgstr ""
+
+#: includes/admin/supports/blocks/build/logoshowcase/index.js:1
+msgid "You can pass multiple ids with comma seperated. You can find id at relevant category listing page."
+msgstr ""
+
+#: includes/admin/supports/blocks/build/logoshowcase/index.js:1
+msgid "Enter category id to display categories wise."
+msgstr ""
+
+#: includes/admin/supports/blocks/build/logoshowcase/index.js:1
+msgid "Display Child Category"
+msgstr ""
+
+#: includes/admin/supports/blocks/build/logoshowcase/index.js:1
+msgid "If you are using parent category then whether to display child category or not. Upgarade to "
+msgstr ""
+
+#: includes/admin/supports/blocks/build/logoshowcase/index.js:1
+msgid "Exclude Category"
+msgstr ""
+
+#: includes/admin/supports/blocks/build/logoshowcase/index.js:1
+msgid "Exclude post category. Works only if `Category` field is empty. You can pass multiple ids with comma seperated. You can find id at relevant category listing page. Upgarade to "
+msgstr ""
+
+#: includes/admin/supports/blocks/build/logoshowcase/index.js:1
+msgid "Display Specific Posts"
+msgstr ""
+
+#: includes/admin/supports/blocks/build/logoshowcase/index.js:1
+msgid "Enter id of the post which you want to display. You can pass multiple ids with comma seperated. You can find id at relevant post listing page. Upgarade to "
+msgstr ""
+
+#: includes/admin/supports/blocks/build/logoshowcase/index.js:1
+msgid "Exclude Post"
+msgstr ""
+
+#: includes/admin/supports/blocks/build/logoshowcase/index.js:1
+msgid "Enter id of the post which you do not want to display. You can pass multiple ids with comma seperated. You can find id at relevant post listing page. Upgarade to "
+msgstr ""
+
+#: includes/admin/supports/blocks/build/logoshowcase/index.js:1
+msgid "Query Offset"
+msgstr ""
+
+#: includes/admin/supports/blocks/build/logoshowcase/index.js:1
+msgid "Exclude number of posts from starting. e.g if you pass 5 then it will skip first five post. Note: This will not work with limit=-1. Upgrade to "
+msgstr ""
+
+#: includes/admin/supports/blocks/build/logoshowcase/index.js:1
+msgid "Do you want to check demo of this plugin."
+msgstr ""
+
+#: includes/admin/supports/blocks/build/logoshowcase/index.js:1
+msgid "Click here"
+msgstr ""
+
+#: includes/admin/supports/blocks/build/logoshowcase/index.js:1
+msgid "Do you also want to check premium version demo of this plugin."
+msgstr ""
+
+#: includes/admin/supports/blocks/build/logoshowcase/block.json
+msgctxt "block title"
+msgid "Logo Slider"
+msgstr ""
+
+#: includes/admin/supports/blocks/build/logoshowcase/block.json
+msgctxt "block description"
+msgid "Display logo in a slider view with various layouts."
+msgstr ""
+
+#: includes/admin/supports/blocks/build/logoshowcase/block.json
+msgctxt "block keyword"
+msgid "essential"
+msgstr ""
+
+#: includes/admin/supports/blocks/build/logoshowcase/block.json
+msgctxt "block keyword"
+msgid "wpls logo slider"
+msgstr ""
+
+#: includes/admin/supports/blocks/build/logoshowcase/block.json
+msgctxt "block keyword"
+msgid "logoshowcase"
+msgstr ""

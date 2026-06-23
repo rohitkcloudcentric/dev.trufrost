@@ -1,0 +1,12 @@
+{
+    "timestamp": "2026-06-02 06:55:44",
+    "request_id": "a4f67a4636",
+    "prefix": "4_salesforce_register_case_response",
+    "data": {
+        "http_code": 500,
+        "curl_error": "",
+        "effective_url": "https://trufrostandbutler--qa.sandbox.my.salesforce.com/services/apexrest/web_RegisterCaseAccountAsset",
+        "response": "{\"status\":\"Failed\",\"parentSRId\":null,\"message\":\"Attempt to de-reference a null object\",\"childSRId\":null,\"assetId\":null,\"accountId\":null}",
+        "response_length": 136
+    }
+}

@@ -1,0 +1,16 @@
+{
+    "timestamp": "2026-06-19 12:26:53",
+    "request_id": "9fad9e6809",
+    "prefix": "4_salesforce_register_case_request",
+    "data": {
+        "contactId": "003HE00000HkrFdYAJ",
+        "accountId": "001HE00000JEFfNYAX",
+        "gstin": "29ABCDE1234F1Z5",
+        "pan": "ABCDE1234F",
+        "assetId": "02iHE0000083yXhYAI",
+        "purpose": "Installation",
+        "priority": "Normal",
+        "callType": "Under AMC",
+        "description": "Install problems"
+    }
+}

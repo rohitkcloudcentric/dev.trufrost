@@ -1,0 +1,14 @@
+{
+    "timestamp": "2026-06-19 09:41:21",
+    "request_id": "dcd3cfe2e3",
+    "prefix": "4_salesforce_register_case_request",
+    "data": {
+        "contactId": "003HE00000Hh0W7YAJ",
+        "accountId": "001HE00000IqCFhYAN",
+        "assetId": "02iHE000007pjOrYAI",
+        "purpose": "Installation",
+        "priority": "Normal",
+        "callType": "Regular",
+        "description": "Product is not good quality"
+    }
+}
