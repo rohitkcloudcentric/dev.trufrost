@@ -3,7 +3,7 @@
 Plugin Name: Trufrost Admin Dashboard
 Description: Advanced Admin Dashboard module to manage OTP Verifications and Service Requests.
 Version: 1.0
-Author: Antigravity
+Author: Rohit Kashyap
 Author URI: https://github.com/google-deepmind
 License: GPL2
 */
