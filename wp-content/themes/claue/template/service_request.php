@@ -7,9 +7,17 @@ get_header();
 <link rel="preconnect" href="https://cdn.jsdelivr.net">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-<link rel="stylesheet" href="<?php echo get_stylesheet_directory_uri(); ?>/template/style.css">
+<link rel="stylesheet" href="<?php echo get_stylesheet_directory_uri(); ?>/template/style.css?v=<?php echo filemtime(get_stylesheet_directory() . '/template/style.css'); ?>">
 
 <body>
+    <!-- Global Loading Overlay -->
+    <div id="global-loader-overlay" class="global-loader-overlay hidden">
+        <div class="loader-content">
+            <div class="loader-spinner"></div>
+            <p id="global-loader-text">Loading, please wait...</p>
+        </div>
+    </div>
+
     <!-- Main Content -->
     <main class="main-content">
         <div class="container service-shell">
@@ -59,7 +67,7 @@ get_header();
 
                     <!-- OTP Verification Container (Initially Hidden) -->
                     <div id="otpVerificationContainer" class="otp-verification-container hidden">
-                        <div class="form-group full-width verification-field">
+                        <div class="form-group verification-field">
                             <label for="mobileNumber">Mobile Number <span class="required-asterisk">*</span> <i class="bi bi-info-circle help-icon" data-bs-toggle="tooltip" data-bs-title="OTP verification is required before creating a service request."></i></label>
                             <div class="input-group input-group-equal">
                                 <div class="field-with-error">
@@ -72,7 +80,7 @@ get_header();
                         </div>
 
                         <!-- OTP Field (Hidden by default) -->
-                        <div class="form-group otp-group hidden full-width verification-field" id="otpGroup">
+                        <div class="form-group otp-group hidden verification-field" id="otpGroup">
                             <label for="otp">Enter OTP <span class="required-asterisk">*</span></label>
                             <div class="input-group input-group-equal">
                                 <div class="field-with-error">
@@ -84,10 +92,20 @@ get_header();
                         </div>
                     </div>
 
-                    <!-- GST/PAN Search Section (Scenario 2) -->
+                    <!-- GST/PAN Search Section (Scenario 2 & Inactive Contact) -->
                     <div id="gstPanSearchSection" class="hidden gst-pan-search-wrapper">
-                        <h4><i class="bi bi-building-check"></i> Mobile number not registered</h4>
-                        <p>Please search your business details using GSTIN or PAN.</p>
+
+                        <!-- Inactive Contact Notice Banner (shown only when contact is inactive) -->
+                        <div id="inactiveContactNotice" class="inactive-notice hidden">
+                            <span class="inactive-notice__icon"><i class="bi bi-exclamation-circle-fill"></i></span>
+                            <div class="inactive-notice__body">
+                                <strong>Account Inactive</strong>
+                                <span>Your account is currently inactive. Please verify your business details using GSTIN or PAN to continue.</span>
+                            </div>
+                        </div>
+
+                        <h4 id="gstPanSearchTitle"><i class="bi bi-building-check"></i> Mobile number not registered</h4>
+                        <p id="gstPanSearchSubtitle">Please search your business details using GSTIN or PAN.</p>
                         <label for="gstinOrPanInput">GSTIN or PAN Number <span class="required-asterisk">*</span></label>
                         <div class="input-group input-group-equal">
                             <div class="field-with-error">
@@ -275,7 +293,7 @@ get_header();
                 </div>
 
                 <p class="contact-info">For more information, call us on our toll-free number.</p>
-                <button class="btn btn-secondary" onclick="location.reload()"><i class="bi bi-arrow-repeat"></i> Raise Another Request</button>
+                <button class="btn btn-secondary" id="raiseAnotherBtn"><i class="bi bi-arrow-repeat"></i> Raise Another Request</button>
             </div>
 
             <!-- Failure Message Container -->
@@ -288,7 +306,7 @@ get_header();
                     <p id="failureErrorMessage" style="margin: 10px 0; color: #856404;">-</p>
                 </div>
                 <p class="contact-info">Please try again or contact our support team for assistance.</p>
-                <button class="btn btn-secondary" onclick="location.reload()"><i class="bi bi-arrow-counterclockwise"></i> Try Again</button>
+                <button class="btn btn-secondary" id="tryAgainBtn"><i class="bi bi-arrow-counterclockwise"></i> Try Again</button>
             </div>
 
         </div>
@@ -298,7 +316,7 @@ get_header();
     <script>
         const wp_theme_api_url = "<?php echo get_stylesheet_directory_uri(); ?>/template/api-handler.php";
     </script>
-    <script src="<?php echo get_stylesheet_directory_uri(); ?>/template/script.js"></script>
+    <script src="<?php echo get_stylesheet_directory_uri(); ?>/template/script.js?v=<?php echo filemtime(get_stylesheet_directory() . '/template/script.js'); ?>"></script>
     <script>
         const yearElement = document.getElementById('year');
         if (yearElement) {

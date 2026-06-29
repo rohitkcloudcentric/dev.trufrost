@@ -266,6 +266,19 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    document.addEventListener('blur', (event) => {
+        if (event.target && event.target.id === 'email') {
+            const emailVal = event.target.value.trim();
+            if (emailVal) {
+                if (!validateEmail(emailVal)) {
+                    showFieldError('email', 'Please enter a valid email address (e.g., name@domain.com).');
+                } else {
+                    clearFieldError('email');
+                }
+            }
+        }
+    }, true);
+
     ensureInlineErrorSlots();
     updateProgress('verify');
     initializeUploadZone(gstinPanAttachment, gstinPanAttachmentDisplay, 'Click to browse or drag file here');
@@ -304,6 +317,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Check Session on Page Load ---
     async function checkExistingSession() {
+        showGlobalLoader('Verifying session and loading system data...');
         try {
             console.log('Starting session check...');
             const response = await fetch(API_URL, {
@@ -329,13 +343,21 @@ document.addEventListener('DOMContentLoaded', () => {
                 await Promise.all([fetchProducts(), fetchCustomerDataInBackground()]);
 
                 // Now customerData is set, decide which scenario to show
-                if (customerData && customerData.contactInfo && customerData.contactInfo.SF_ContactId) {
+                const sessionContact    = customerData?.contactInfo;
+                const sessionHasContact = sessionContact && sessionContact.SF_ContactId;
+                const sessionActive     = isContactActive(sessionContact);
+
+                if (sessionHasContact && sessionActive) {
+                    // Active contact — go directly to the form
                     activeScenario = 'Scenario_1';
-                    contactId = customerData.contactInfo.SF_ContactId;
+                    contactId = sessionContact.SF_ContactId;
                     populateFormWithCustomerData(customerData);
                     revealForm();
+                } else if (sessionHasContact && !sessionActive) {
+                    // Inactive contact — show GST/PAN gate with notice
+                    showGstPanSearchSection(true);
                 } else {
-                    // Customer data not found (new user or Scenario 2) - show OTP screen
+                    // No contact found — show OTP screen (new user)
                     otpVerificationContainer.classList.remove('hidden');
                 }
             } else {
@@ -353,6 +375,8 @@ document.addEventListener('DOMContentLoaded', () => {
             productDetailsSection.classList.add('hidden');
             submitSection.classList.add('hidden');
             mobileNumberDisplaySection.classList.add('hidden');
+        } finally {
+            hideGlobalLoader();
         }
     }
 
@@ -363,13 +387,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Helper Functions ---
     function mapWarrantyTypeToSalesforce(formValue) {
+        // Map form dropdown values → Salesforce Asset Warranty_Type__c restricted picklist
         const warrantyMapping = {
-            'Standard Warranty': 'Standard Warranty',
-            'Extended Warranty': 'Extended Warranty',
-            'Under AMC': 'Under AMC',
-            'Out of warranty': 'Out of Warranty'
+            'Standard Warranty':   'Standard Warranty',
+            'Extended Warranty':   '1+1 Year Extended Warrantyed Warranty',
+            'Under AMC':           'AMC',
+            'Out of warranty':     'Not Applicable'
         };
-        return warrantyMapping[formValue] || formValue;
+        return warrantyMapping[formValue] !== undefined ? warrantyMapping[formValue] : formValue;
     }
 
     function showLoader(button, text = 'Loading...') {
@@ -381,6 +406,66 @@ document.addEventListener('DOMContentLoaded', () => {
     function hideLoader(button) {
         button.disabled = false;
         button.textContent = button.dataset.originalText || button.textContent;
+    }
+
+    function showGlobalLoader(text = 'Loading, please wait...') {
+        const overlay = document.getElementById('global-loader-overlay');
+        const textEl = document.getElementById('global-loader-text');
+        if (overlay && textEl) {
+            textEl.textContent = text;
+            overlay.classList.remove('hidden');
+        }
+    }
+
+    function hideGlobalLoader() {
+        const overlay = document.getElementById('global-loader-overlay');
+        if (overlay) {
+            overlay.classList.add('hidden');
+        }
+    }
+
+    // --- Contact Status Helpers ---
+
+    /**
+     * Returns true if the contactInfo returned by Salesforce represents an active contact.
+     * Inactive is signalled by: isActive === false  OR  status === 'Inactive' (case-insensitive).
+     */
+    function isContactActive(contact) {
+        if (!contact || !contact.SF_ContactId) return false;
+        if (contact.isActive === false) return false;
+        if (contact.status && contact.status.toLowerCase() === 'inactive') return false;
+        return true;
+    }
+
+    /**
+     * Show the GST/PAN search gate. Optionally pass `inactiveMode = true`
+     * to update the heading/subtitle copy and reveal the inactive notice banner.
+     */
+    function showGstPanSearchSection(inactiveMode = false) {
+        const notice = document.getElementById('inactiveContactNotice');
+        const title  = document.getElementById('gstPanSearchTitle');
+        const sub    = document.getElementById('gstPanSearchSubtitle');
+
+        otpVerificationContainer.classList.add('hidden');
+        otpVerificationContainer.classList.remove('otp-active');
+
+        const sectionTitle = document.getElementById('sectionTitle');
+        if (sectionTitle) {
+            sectionTitle.textContent = inactiveMode ? 'Account Verification Required' : 'Verification Required';
+        }
+
+        if (inactiveMode) {
+            if (notice) notice.classList.remove('hidden');
+            if (title)  title.innerHTML  = '<i class="bi bi-person-x-fill"></i> Account Inactive';
+            if (sub)    sub.textContent  = 'Please verify your business identity using GSTIN or PAN to reactivate your service request.';
+        } else {
+            if (notice) notice.classList.add('hidden');
+            if (title)  title.innerHTML  = '<i class="bi bi-building-check"></i> Mobile number not registered';
+            if (sub)    sub.textContent  = 'Please search your business details using GSTIN or PAN.';
+        }
+
+        gstPanSearchSection.classList.remove('hidden');
+        gstinOrPanInput.focus();
     }
 
     function showError(message) {
@@ -399,6 +484,11 @@ document.addEventListener('DOMContentLoaded', () => {
     function validatePAN(panNumber) {
         const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
         return panRegex.test(panNumber.toUpperCase());
+    }
+
+    function validateEmail(email) {
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        return emailRegex.test(email);
     }
 
     // --- Populate Form with Customer Data (Scenario 1) ---
@@ -557,6 +647,7 @@ document.addEventListener('DOMContentLoaded', () => {
         updateProgress('customer');
 
         otpVerificationContainer.classList.add('hidden');
+        otpVerificationContainer.classList.remove('otp-active');
         if (gstPanSearchSection) {
             gstPanSearchSection.classList.add('hidden');
         }
@@ -613,6 +704,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (data.success) {
                 isSuccess = true;
                 otpGroup.classList.remove('hidden');
+                otpVerificationContainer.classList.add('otp-active');
                 // Update the saved text so hideLoader restores to "Resend OTP" not "Send OTP"
                 sendOtpBtn.dataset.originalText = 'Resend OTP';
 
@@ -695,23 +787,24 @@ document.addEventListener('DOMContentLoaded', () => {
                 isOtpVerified = true;
                 customerData = data.customerData;
 
-                // Determine whether Contact exists (Scenario 1) or not (Scenario 2)
-                if (customerData && customerData.contactInfo && customerData.contactInfo.SF_ContactId) {
-                    activeScenario = 'Scenario_1';
-                    contactId = customerData.contactInfo.SF_ContactId;
+                // Determine whether Contact is active, inactive, or missing
+                const contact    = customerData?.contactInfo;
+                const hasContact = contact && contact.SF_ContactId;
+                const active     = isContactActive(contact);
 
+                if (hasContact && active) {
+                    // Scenario 1: Active existing contact — go directly to the form
+                    activeScenario = 'Scenario_1';
+                    contactId = contact.SF_ContactId;
                     populateFormWithCustomerData(customerData);
                     await fetchProducts();
                     revealForm();
+                } else if (hasContact && !active) {
+                    // Inactive contact — show GST/PAN gate with informational notice
+                    showGstPanSearchSection(true);
                 } else {
-                    // Scenario 2: Mobile number does not exist - search by GST/PAN
-                    otpVerificationContainer.classList.add('hidden');
-                    const sectionTitle = document.getElementById('sectionTitle');
-                    if (sectionTitle) {
-                        sectionTitle.textContent = 'Verification Required';
-                    }
-                    gstPanSearchSection.classList.remove('hidden');
-                    gstinOrPanInput.focus();
+                    // Scenario 2: No contact at all — show GST/PAN gate normally
+                    showGstPanSearchSection(false);
                 }
             } else {
                 showError(data.message || 'Verification failed');
@@ -754,6 +847,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         clearFieldError('gstinOrPanInput');
         showLoader(gstinOrPanSearchBtn, 'Searching...');
+        showGlobalLoader('Searching business details in Salesforce...');
         searchGstPanVal = gstPanVal;
 
         try {
@@ -786,9 +880,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 const account = Array.isArray(data.accountInfo) ? data.accountInfo[0] : data.accountInfo;
                 accountId = account.SF_AccountId;
 
-                // Check if a contact already exists for this account
-                const existingContact = data.contactInfo && data.contactInfo.SF_ContactId ? data.contactInfo : null;
-                contactId = existingContact ? existingContact.SF_ContactId : null;
+                // Scenario 2A: Always create a new contact record with the given mobile number
+                const existingContact = null;
+                contactId = null;
 
                 // --- Populate Business / Company Info (readonly) ---
                 companyName.value = account.accountName || '';
@@ -928,6 +1022,7 @@ document.addEventListener('DOMContentLoaded', () => {
             gstinOrPanSearchError.style.display = 'block';
         } finally {
             hideLoader(gstinOrPanSearchBtn);
+            hideGlobalLoader();
         }
     });
 
@@ -1087,9 +1182,13 @@ document.addEventListener('DOMContentLoaded', () => {
         productsList.forEach(prod => {
             const option = document.createElement('option');
             option.value = prod.salesforceId || prod.id;
+            // Show: ModelNo - ProductName [Category]
             let displayText = prod.name || '';
+            if (prod.family) {
+                displayText = displayText + ' [' + prod.family + ']';
+            }
             if (prod.modelNo) {
-                displayText = prod.modelNo + ' - ' + displayText;
+                displayText = prod.modelNo + ' — ' + displayText;
             }
             option.textContent = displayText;
             modelSelect.appendChild(option);
@@ -1130,6 +1229,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 serialNumber.setAttribute('required', 'required');
                 purchaseDate.setAttribute('required', 'required');
+
+                // Clear any existing asset summary badge when selecting Other
+                const badge = document.getElementById('assetSummary_' + index);
+                if (badge) {
+                    badge.remove();
+                }
             } else if (val === '') {
                 modelSelectionGroup.classList.add('hidden');
                 modelSelect.removeAttribute('required');
@@ -1149,6 +1254,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 serialNumber.removeAttribute('required');
                 purchaseDate.removeAttribute('required');
+
+                // Clear any existing asset summary badge when clearing selection
+                const badge = document.getElementById('assetSummary_' + index);
+                if (badge) {
+                    badge.remove();
+                }
             } else {
                 // Selected an existing registered asset - prefill all fields
                 modelSelectionGroup.classList.add('hidden');
@@ -1158,6 +1269,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 const selectedAsset = registeredAssets.find(a => a.assetId === val);
                 if (selectedAsset) {
+                    // For registered assets the family isn't returned, so show asset name as-is
                     productName.value    = selectedAsset.assetName || '';
                     productCategory.value = '';
                     serialNumber.value   = selectedAsset.serialNumber || '';
@@ -1165,6 +1277,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (installationDate) {
                         const instDateVal = selectedAsset.InstallDates || selectedAsset.InstallDate || selectedAsset.installDate || '';
                         installationDate.value = instDateVal;
+                        installationDate.min = selectedAsset.purchaseDate || '';
                         installationDate.readOnly = true;
                         installationDate.classList.add('readonly-input');
                     }
@@ -1178,16 +1291,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
                     // Map Salesforce warrantyType string back to our select option value
                     const warrantyKeyMap = {
-                        '1 Year Standard Warranty':   'Standard Warranty',
-                        '1+1 Year Extended Warranty': 'Extended Warranty',
-                        '1+2 Years Extended Warranty': 'Extended Warranty',
-                        'Standard Warranty':           'Standard Warranty',
-                        'Extended Warranty':           'Extended Warranty',
-                        'AMC':                        'Under AMC',
-                        'Under AMC':                  'Under AMC',
-                        'Negotiated Warranty':         'Under AMC',
-                        'Out of Warranty':            'Out of warranty',
-                        'Out of warranty':            'Out of warranty'
+                        'Standard Warranty': 'Standard Warranty',
+                        'Negotiated Warranty': 'Standard Warranty',
+                        '1 Year Standard Warranty': 'Standard Warranty',
+                        '1+1 Year Extended Warrantyed Warranty': 'Extended Warranty',
+                        '1+2 Year Extended Warranty': 'Extended Warranty',
+                        'Not Applicable': 'Out of warranty',
+                        'AMC': 'Under AMC'
                     };
                     const mappedWarranty = warrantyKeyMap[selectedAsset.warrantyType] || '';
                     warrantySelect.value = mappedWarranty;
@@ -1220,6 +1330,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 manualModelGroup.classList.remove('hidden');
                 manualModel.setAttribute('required', 'required');
                 productName.value = '';
+                productName.dataset.rawName = '';
                 productCategory.value = '';
                 productName.readOnly = false;
                 productCategory.readOnly = false;
@@ -1235,8 +1346,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 const selectedProd = productsList.find(p => (p.salesforceId || p.id) === val);
                 if (selectedProd) {
-                    productName.value = selectedProd.name || '';
-                    productCategory.value = selectedProd.family || '';
+                    // Show Category alongside Product Name for better context
+                    const catPrefix = selectedProd.family ? selectedProd.family + ' — ' : '';
+                    productName.value                    = catPrefix + (selectedProd.name || '');
+                    productName.dataset.rawName           = selectedProd.name || '';
+                    productCategory.value                = selectedProd.family || '';
                 }
             }
         });
@@ -1263,12 +1377,76 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
+        // 5a. Date Validation constraints & listeners
+        const todayStr = new Date().toISOString().split('T')[0];
+        if (purchaseDate) {
+            purchaseDate.max = todayStr;
+        }
+        if (installationDate) {
+            installationDate.max = todayStr;
+        }
+
+        if (purchaseDate && installationDate) {
+            purchaseDate.addEventListener('change', () => {
+                const purVal = purchaseDate.value;
+                if (purVal > todayStr) {
+                    showFieldError(purchaseDate.id, 'Purchase Date cannot be a future date.');
+                    purchaseDate.value = '';
+                    installationDate.min = '';
+                } else {
+                    clearFieldError(purchaseDate.id);
+                    installationDate.min = purVal;
+                }
+
+                // Re-validate installation date if already selected
+                const instVal = installationDate.value;
+                if (instVal) {
+                    if (instVal > todayStr) {
+                        showFieldError(installationDate.id, 'Installation Date cannot be a future date.');
+                    } else if (purVal && instVal < purVal) {
+                        showFieldError(installationDate.id, 'Installation Date must be on or after the Purchase Date.');
+                    } else {
+                        clearFieldError(installationDate.id);
+                    }
+                }
+            });
+
+            installationDate.addEventListener('change', () => {
+                const purVal = purchaseDate.value;
+                const instVal = installationDate.value;
+                if (instVal) {
+                    if (instVal > todayStr) {
+                        showFieldError(installationDate.id, 'Installation Date cannot be a future date.');
+                    } else if (purVal && instVal < purVal) {
+                        showFieldError(installationDate.id, 'Installation Date must be on or after the Purchase Date.');
+                    } else {
+                        clearFieldError(installationDate.id);
+                    }
+                } else {
+                    clearFieldError(installationDate.id);
+                }
+            });
+        }
+
         // 6. Custom search overlay for registered assets - using shared helper
         renderAssetDropdownById(index, registeredAssets);
 
-        assetSelect.addEventListener('click', () => {
-            assetDropdownWrapper.classList.remove('hidden');
-            assetSearchInput.focus();
+        // Prevent native dropdown list from opening and show custom searchable dropdown wrapper
+        assetSelect.addEventListener('mousedown', (e) => {
+            e.preventDefault();
+            // Clear stale asset summary badge immediately when user interacts with Select Asset dropdown
+            const badge = document.getElementById('assetSummary_' + index);
+            if (badge) {
+                badge.remove();
+            }
+
+            const isHidden = assetDropdownWrapper.classList.contains('hidden');
+            // Hide other dropdown wrapper
+            document.querySelectorAll('.model-dropdown-wrapper').forEach(w => w.classList.add('hidden'));
+            if (isHidden) {
+                assetDropdownWrapper.classList.remove('hidden');
+                assetSearchInput.focus();
+            }
         });
 
         assetSearchInput.addEventListener('input', (e) => {
@@ -1290,11 +1468,10 @@ document.addEventListener('DOMContentLoaded', () => {
         // 7. Custom search overlay for Salesforce Product models
         function renderModelDropdown(productsToShow) {
             modelDropdownList.innerHTML = productsToShow.map(prod => {
-                let displayText = prod.name || '';
-                if (prod.modelNo) {
-                    displayText = prod.modelNo;
-                }
-                return `<div class="model-dropdown-item" data-value="${prod.salesforceId || prod.id}" data-name="${prod.name}" data-category="${prod.family || ''}">${displayText}</div>`;
+                const modelPart    = prod.modelNo   ? `<span class="model-item-no">${prod.modelNo}</span>` : '';
+                const namePart     = prod.name      ? `<span class="model-item-name">${prod.name}</span>` : '';
+                const categoryPart = prod.family    ? `<span class="model-item-category">${prod.family}</span>` : '';
+                return `<div class="model-dropdown-item" data-value="${prod.salesforceId || prod.id}" data-name="${prod.name}" data-category="${prod.family || ''}">${modelPart}${namePart}${categoryPart}</div>`;
             }).join('');
             modelDropdownList.innerHTML += `<div class="model-dropdown-item" data-value="other" data-name="Other" data-category="">Other (Add New)</div>`;
 
@@ -1310,9 +1487,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
         renderModelDropdown(productsList);
 
-        modelSelect.addEventListener('click', () => {
-            modelDropdownWrapper.classList.remove('hidden');
-            modelSearchInput.focus();
+        // Prevent native dropdown list from opening and show custom searchable dropdown wrapper
+        modelSelect.addEventListener('mousedown', (e) => {
+            e.preventDefault();
+            const isHidden = modelDropdownWrapper.classList.contains('hidden');
+            // Hide other dropdown wrapper
+            document.querySelectorAll('.model-dropdown-wrapper').forEach(w => w.classList.add('hidden'));
+            if (isHidden) {
+                modelDropdownWrapper.classList.remove('hidden');
+                modelSearchInput.focus();
+            }
         });
 
         modelSearchInput.addEventListener('input', (e) => {
@@ -1408,6 +1592,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
 
+            const emailInput = document.getElementById('email');
+            const emailVal = emailInput ? emailInput.value.trim() : '';
+            if (emailInput && emailVal && !validateEmail(emailVal)) {
+                showFieldError('email', 'Please enter a valid email address (e.g., name@domain.com).');
+                if (!firstInvalid) firstInvalid = emailInput;
+            }
+
             return { isValid: !firstInvalid, firstInvalid };
         }
 
@@ -1433,9 +1624,56 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
+        // Validate dates on all product cards
+        let firstDateInvalidField = null;
+        const todayStr = new Date().toISOString().split('T')[0];
+        for (const idx of productCards) {
+            const assetSelectVal = document.getElementById('assetNumber_' + idx).value;
+            // Only validate dates if registering a new product / selecting 'other'
+            if (assetSelectVal === 'other') {
+                const purchaseDateEl = document.getElementById('purchaseDate_' + idx);
+                const installationDateEl = document.getElementById('installationDate_' + idx);
+
+                if (purchaseDateEl) {
+                    const purVal = purchaseDateEl.value;
+                    if (!purVal) {
+                        showFieldError(purchaseDateEl.id, 'Purchase Date is required.');
+                        if (!firstDateInvalidField) firstDateInvalidField = purchaseDateEl;
+                    } else if (purVal > todayStr) {
+                        showFieldError(purchaseDateEl.id, 'Purchase Date cannot be a future date.');
+                        if (!firstDateInvalidField) firstDateInvalidField = purchaseDateEl;
+                    } else {
+                        clearFieldError(purchaseDateEl.id);
+                    }
+                }
+
+                if (installationDateEl) {
+                    const purVal = purchaseDateEl ? purchaseDateEl.value : '';
+                    const instVal = installationDateEl.value;
+                    if (instVal) {
+                        if (instVal > todayStr) {
+                            showFieldError(installationDateEl.id, 'Installation Date cannot be a future date.');
+                            if (!firstDateInvalidField) firstDateInvalidField = installationDateEl;
+                        } else if (purVal && instVal < purVal) {
+                            showFieldError(installationDateEl.id, 'Installation Date must be on or after the Purchase Date.');
+                            if (!firstDateInvalidField) firstDateInvalidField = installationDateEl;
+                        } else {
+                            clearFieldError(installationDateEl.id);
+                        }
+                    }
+                }
+            }
+        }
+
+        if (firstDateInvalidField) {
+            firstDateInvalidField.focus();
+            return;
+        }
+
 
         const submitBtn = document.getElementById('submitBtn');
         showLoader(submitBtn, 'Submitting...');
+        showGlobalLoader('Submitting service request to Salesforce...');
 
         try {
             // Loop through each product card to submit separate Salesforce request cases
@@ -1490,6 +1728,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 } else if (activeScenario === 'Scenario_2A') {
                     formData.accountId = accountId;
 
+                    // Include GSTIN / PAN retrieved during verification search
+                    const gstinVal = gstinReadonly?.value?.trim();
+                    if (gstinVal) {
+                        formData.gstin = gstinVal;
+                    }
+                    const panVal = panReadonly?.value?.trim();
+                    if (panVal) {
+                        formData.pan = panVal;
+                    }
+
                     if (contactId) {
                         // Existing contact was found during GST/PAN search - just pass the IDs
                         formData.contactId = contactId;
@@ -1537,7 +1785,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (assetSelectVal !== 'other') {
                     formData.assetId = assetSelectVal;
                 } else {
-                    formData.assetName = document.getElementById('productName_' + idx).value.trim();
+                    // Use raw product name (without category prefix) for Salesforce payload
+                    const productNameEl = document.getElementById('productName_' + idx);
+                    formData.assetName = (productNameEl.dataset.rawName || productNameEl.value).trim();
                     formData.product2Id = document.getElementById('modelNumber_' + idx).value;
                     formData.purchaseDate = document.getElementById('purchaseDate_' + idx).value;
                     formData.warrantyType = mapWarrantyTypeToSalesforce(document.getElementById('warrantyStatus_' + idx).value);
@@ -1555,7 +1805,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Note: Salesforce endpoint expects 'purpose' not 'serviceCategory'
                 formData.purpose = document.getElementById('serviceCategory_' + idx).value;
                 formData.priority = 'Normal';
-                formData.callType = mapWarrantyTypeToSalesforce(document.getElementById('warrantyStatus_' + idx).value);
+                formData.callType = document.getElementById('warrantyStatus_' + idx).value;
 
                 const issueDesc = document.getElementById('issueDescription_' + idx).value;
                 if (issueDesc && issueDesc.trim() !== '') {
@@ -1591,8 +1841,10 @@ document.addEventListener('DOMContentLoaded', () => {
             );
 
             if (successfulResults.length === results.length) {
-                // All cases successfully generated
-                const caseIds = successfulResults.map((r, i) => r.caseNumber || r.CaseNumber || r.parentSRId || r.caseId || r.childSRId || `TRU-${Math.floor(10000 + Math.random() * 90000)}`).join(', ');
+                const caseIds = successfulResults.map((r, i) => {
+                    const nestedCase = (r.childCases && r.childCases[0]) ? (r.childCases[0].caseNumber || r.childCases[0].childSRId) : null;
+                    return r.caseNumber || r.CaseNumber || nestedCase || r.parentSRId || r.caseId || r.childSRId || `TRU-${Math.floor(10000 + Math.random() * 90000)}`;
+                }).join(', ');
 
                 form.classList.add('hidden');
                 document.querySelector('.form-header').classList.add('hidden');
@@ -1647,6 +1899,7 @@ document.addEventListener('DOMContentLoaded', () => {
             window.scrollTo({ top: 0, behavior: 'smooth' });
         } finally {
             hideLoader(submitBtn);
+            hideGlobalLoader();
         }
     });
 
@@ -1716,6 +1969,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="form-group" id="installationDateGroup_${index}">
                     <label for="installationDate_${index}">Installation Date</label>
                     <input type="date" id="installationDate_${index}" name="installationDate_${index}">
+                    <span class="error-message" id="installationDate_${index}-error"></span>
                 </div>
 
                 <div class="form-group">
@@ -1764,5 +2018,33 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
             </div>
         </div>`;
+    }
+
+    // --- Reset Flow (Try Again / Raise Another Request) ---
+    async function resetAndReload() {
+        try {
+            await fetch(API_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    action: 'clearSession'
+                })
+            });
+        } catch (e) {
+            console.error('Error clearing session:', e);
+        }
+        location.reload();
+    }
+
+    const tryAgainBtn = document.getElementById('tryAgainBtn');
+    if (tryAgainBtn) {
+        tryAgainBtn.addEventListener('click', resetAndReload);
+    }
+
+    const raiseAnotherBtn = document.getElementById('raiseAnotherBtn');
+    if (raiseAnotherBtn) {
+        raiseAnotherBtn.addEventListener('click', resetAndReload);
     }
 });

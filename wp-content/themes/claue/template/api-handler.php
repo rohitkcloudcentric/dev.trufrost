@@ -1,4 +1,16 @@
 <?php
+ob_start();
+
+// Configure session settings BEFORE starting session
+ini_set('session.gc_maxlifetime', 1800); // 30 minutes
+ini_set('session.cookie_lifetime', 1800); // 30 minutes
+ini_set('session.cookie_httponly', 1);
+ini_set('session.use_strict_mode', 1);
+
+// Start session at the very beginning
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
 /**
  * API Handler for Salesforce Integration
@@ -173,16 +185,7 @@ if (file_exists($wp_load_path)) {
     $wpdb = $GLOBALS['wpdb'];
 }
 
-// Configure session settings BEFORE starting session
-ini_set('session.gc_maxlifetime', 1800); // 30 minutes
-ini_set('session.cookie_lifetime', 1800); // 30 minutes
-ini_set('session.cookie_httponly', 1);
-ini_set('session.use_strict_mode', 1);
-
-// Start session at the very beginning
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
+// Session is configured and started at the very top of this file
 
 // Enable error reporting for debugging (disable in production)
 error_reporting(E_ALL);
@@ -266,8 +269,9 @@ function generateAccessToken()
  */
 function cleanupExpiredOTPs()
 {
-    global $wpdb;
-    $wpdb->query($wpdb->prepare("DELETE FROM " . OTP_TABLE . " WHERE expires_at < %s", date('Y-m-d H:i:s')));
+    // Bypassed to preserve complete database history of OTP details for every mobile number
+    // global $wpdb;
+    // $wpdb->query($wpdb->prepare("DELETE FROM " . OTP_TABLE . " WHERE expires_at < %s", date('Y-m-d H:i:s')));
 }
 
 /**
@@ -596,71 +600,30 @@ function sendOTP($mobileNumber)
     // Calculate expiration (10 minutes from now)
     $expiresAt = date('Y-m-d H:i:s', strtotime('+10 minutes'));
 
-    // Check if there's an existing OTP for this mobile number (verified or unverified, but not used)
-    $existingOtp = $wpdb->get_row($wpdb->prepare(
-        "SELECT * FROM " . OTP_TABLE . " 
-        WHERE mobile_number = %s 
-        AND is_used = 0 
-        AND expires_at > %s
-        ORDER BY created_at DESC 
-        LIMIT 1",
-        $mobileNumber,
-        date('Y-m-d H:i:s')
-    ));
+    // Insert new OTP record (always insert to preserve full database history of OTP details for every number)
+    $inserted = $wpdb->insert(
+        OTP_TABLE,
+        [
+            'mobile_number' => $mobileNumber,
+            'otp_code' => $otp,
+            'access_token' => $accessToken,
+            'expires_at' => $expiresAt,
+            'is_verified' => 0,
+            'is_used' => 0,
+            'attempts' => 0
+        ],
+        ['%s', '%s', '%s', '%s', '%d', '%d', '%d']
+    );
 
-    if ($existingOtp) {
-        // Update existing OTP record instead of creating a new one
-        $updated = $wpdb->update(
-            OTP_TABLE,
-            [
-                'otp_code' => $otp,
-                'access_token' => $accessToken,
-                'expires_at' => $expiresAt,
-                'attempts' => 0,
-                'is_verified' => 0,
-                'is_used' => 0,
-                'created_at' => date('Y-m-d H:i:s')
-            ],
-            ['id' => $existingOtp->id],
-            ['%s', '%s', '%s', '%d', '%s'],
-            ['%d']
-        );
-
-        if (!$updated) {
-            error_log('Failed to update OTP: ' . $wpdb->last_error);
-            return [
-                'success' => false,
-                'message' => 'Failed to generate OTP. Please try again.'
-            ];
-        }
-
-        error_log('OTP updated for ' . $mobileNumber . ': ' . $otp);
-    } else {
-        // Insert new OTP record
-        $inserted = $wpdb->insert(
-            OTP_TABLE,
-            [
-                'mobile_number' => $mobileNumber,
-                'otp_code' => $otp,
-                'access_token' => $accessToken,
-                'expires_at' => $expiresAt,
-                'is_verified' => 0,
-                'is_used' => 0,
-                'attempts' => 0
-            ],
-            ['%s', '%s', '%s', '%s', '%d', '%d', '%d']
-        );
-
-        if (!$inserted) {
-            error_log('Failed to insert OTP: ' . $wpdb->last_error);
-            return [
-                'success' => false,
-                'message' => 'Failed to generate OTP. Please try again.'
-            ];
-        }
-
-        error_log('OTP generated for ' . $mobileNumber . ': ' . $otp);
+    if (!$inserted) {
+        error_log('Failed to insert OTP: ' . $wpdb->last_error);
+        return [
+            'success' => false,
+            'message' => 'Failed to generate OTP. Please try again.'
+        ];
     }
+
+    error_log('OTP generated for ' . $mobileNumber . ': ' . $otp);
 
     // Integrate with WhatsApp API to send OTP
     $whatsappResult = sendWhatsAppOTP($mobileNumber, $otp);
@@ -1141,6 +1104,160 @@ function searchGSTPAN($gstinOrPan, $accessToken)
     ];
 }
 
+/**
+ * Create Account in Salesforce
+ */
+function createSalesforceAccount($name, $phone, $gstin, $pan, $street, $city, $state, $country, $postalCode, $accessToken)
+{
+    $url = SF_API_URL . '/services/data/v58.0/sobjects/Account';
+
+    $requestData = [
+        'Name' => $name,
+        'Phone' => $phone,
+        'GSTIN__c' => $gstin,
+        'PAN__c' => $pan,
+        'BillingStreet' => $street,
+        'BillingCity' => $city,
+        'BillingState' => $state,
+        'BillingCountry' => $country,
+        'BillingPostalCode' => $postalCode
+    ];
+    $data = json_encode($requestData);
+
+    error_log('=== Create Salesforce Account Request ===');
+    error_log('Base URL: ' . SF_API_URL);
+    error_log('Full Endpoint URL: ' . $url);
+    error_log('Request Method: POST');
+    error_log('API Payload: ' . $data);
+
+    $reqId = substr(md5(json_encode($requestData) . microtime(true)), 0, 10);
+    log_api_response('8_salesforce_account_create_request', $requestData, $reqId);
+
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, [
+        'Content-Type: application/json',
+        'Authorization: Bearer ' . $accessToken
+    ]);
+
+    $response = curl_exec($ch);
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    $curlError = curl_error($ch);
+    curl_close($ch);
+
+    error_log('Response HTTP Code: ' . $httpCode);
+
+    $responseData = [
+        'http_code' => $httpCode,
+        'curl_error' => $curlError,
+        'response' => $response
+    ];
+    log_api_response('8_salesforce_account_create_response', $responseData, $reqId);
+
+    if ($httpCode === 201) {
+        $result = json_decode($response, true);
+        return $result['id'] ?? null;
+    }
+
+    if ($httpCode === 400 && !empty($response)) {
+        $result = json_decode($response, true);
+        if (is_array($result) && isset($result[0]['errorCode']) && $result[0]['errorCode'] === 'DUPLICATES_DETECTED') {
+            $duplicateId = $result[0]['duplicateResult']['matchResults'][0]['matchRecords'][0]['record']['Id'] ?? null;
+            if ($duplicateId) {
+                error_log('⚠ Duplicate Account Detected. Reusing existing Account ID: ' . $duplicateId);
+                return $duplicateId;
+            }
+        }
+    }
+
+    return null;
+}
+
+/**
+ * Create Contact in Salesforce linked to an Account
+ */
+function createSalesforceContact($accountId, $firstName, $lastName, $phone, $email, $accessToken)
+{
+    $url = SF_API_URL . '/services/data/v58.0/sobjects/Contact';
+
+    $lastNameVal = $lastName ? $lastName : ($firstName ? $firstName : 'Customer');
+    $firstNameVal = $firstName ? $firstName : '';
+
+    $requestData = [
+        'AccountId' => $accountId,
+        'FirstName' => $firstNameVal,
+        'LastName' => $lastNameVal,
+        'Phone' => $phone,
+        'MobilePhone' => $phone,
+        'Email' => $email
+    ];
+    $data = json_encode($requestData);
+
+    error_log('=== Create Salesforce Contact Request ===');
+    error_log('Base URL: ' . SF_API_URL);
+    error_log('Full Endpoint URL: ' . $url);
+    error_log('Request Method: POST');
+    error_log('API Payload: ' . $data);
+
+    $reqId = substr(md5(json_encode($requestData) . microtime(true)), 0, 10);
+
+    // Log request
+    log_api_response('7_salesforce_contact_create_request', $requestData, $reqId);
+
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, [
+        'Content-Type: application/json',
+        'Authorization: Bearer ' . $accessToken
+    ]);
+
+    $response = curl_exec($ch);
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    $curlError = curl_error($ch);
+    curl_close($ch);
+
+    error_log('Response HTTP Code: ' . $httpCode);
+    error_log('Response: ' . $response);
+
+    // Prepare response data for logging
+    $responseData = [
+        'http_code' => $httpCode,
+        'curl_error' => $curlError,
+        'response' => $response
+    ];
+    log_api_response('7_salesforce_contact_create_response', $responseData, $reqId);
+
+    if ($httpCode === 201 && !empty($response)) {
+        $result = json_decode($response, true);
+        if (isset($result['id'])) {
+            error_log('✓ Contact Created Successfully in Salesforce. ID: ' . $result['id']);
+            return $result['id'];
+        }
+    }
+
+    if ($httpCode === 400 && !empty($response)) {
+        $result = json_decode($response, true);
+        if (is_array($result) && isset($result[0]['errorCode']) && $result[0]['errorCode'] === 'DUPLICATES_DETECTED') {
+            $duplicateId = $result[0]['duplicateResult']['matchResults'][0]['matchRecords'][0]['record']['Id'] ?? null;
+            if ($duplicateId) {
+                error_log('⚠ Duplicate Contact Detected. Reusing existing Contact ID: ' . $duplicateId);
+                return $duplicateId;
+            }
+        }
+    }
+
+    error_log('✗ Contact Creation Failed in Salesforce');
+    return null;
+}
+
 // Main request handler
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $input = json_decode(file_get_contents('php://input'), true);
@@ -1294,6 +1411,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 exit;
             }
 
+            // Set default Source for the service request
+            $formData['Source'] = 'Web';
+
             // Extract customer details for local database logging
             $customerName = trim($input['customerName'] ?? $formData['name'] ?? '');
             if (empty($customerName)) {
@@ -1304,8 +1424,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $customerEmail = trim($input['customerEmail'] ?? $formData['email'] ?? $formData['contactEmail'] ?? '');
             $customerMobile = trim($input['customerMobile'] ?? $formData['mobileNumber'] ?? $formData['mobile'] ?? $formData['contactPhone'] ?? $formData['accountPhone'] ?? $_SESSION['verified_mobile'] ?? '');
 
-            // Validate GST and PAN if provided
-            if (isset($formData['gstin']) || isset($formData['pan'])) {
+            // Validate email format
+            if (!empty($customerEmail) && !filter_var($customerEmail, FILTER_VALIDATE_EMAIL)) {
+                echo json_encode([
+                    'success' => false,
+                    'message' => 'Please enter a valid email address (e.g., name@domain.com).'
+                ]);
+                exit;
+            }
+
+            // Validate GST and PAN if provided and we are creating a new Account (accountId is empty)
+            if (empty($formData['accountId']) && (isset($formData['gstin']) || isset($formData['pan']))) {
                 $gstin = $formData['gstin'] ?? '';
                 $pan = $formData['pan'] ?? '';
 
@@ -1347,6 +1476,67 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         ]);
                         exit;
                     }
+                }
+            }
+
+            // Create Account and Contact programmatically in Salesforce if not exists
+            if (empty($formData['accountId'])) {
+                // Scenario 2B: Neither Account nor Contact exists in Salesforce.
+                // We create the Account first, then the Contact linked to that Account.
+                $accountName = $formData['accountName'] ?? $customerName;
+                $accountPhone = $formData['accountPhone'] ?? $customerMobile;
+                $gstin = $formData['gstin'] ?? '';
+                $pan = $formData['pan'] ?? '';
+                $street = $formData['billingStreet'] ?? '';
+                $city = $formData['billingCity'] ?? '';
+                $state = $formData['billingState'] ?? '';
+                $country = $formData['billingCountry'] ?? 'India';
+                $postalCode = $formData['billingPostalCode'] ?? '';
+
+                error_log("Creating Account in Salesforce: " . $accountName);
+                $newAccountId = createSalesforceAccount(
+                    $accountName,
+                    $accountPhone,
+                    $gstin,
+                    $pan,
+                    $street,
+                    $city,
+                    $state,
+                    $country,
+                    $postalCode,
+                    $accessToken
+                );
+
+                if ($newAccountId) {
+                    $formData['accountId'] = $newAccountId;
+                    error_log("Successfully created Account ID: " . $newAccountId);
+
+                    // Now create the Contact linked to this new Account
+                    $firstName = $formData['firstName'] ?? '';
+                    $lastName = $formData['lastName'] ?? '';
+                    $contactPhone = $formData['contactPhone'] ?? $customerMobile;
+                    $contactEmail = $formData['contactEmail'] ?? $customerEmail;
+
+                    error_log("Creating Contact in Salesforce linked to new Account ID: " . $newAccountId);
+                    $newContactId = createSalesforceContact($newAccountId, $firstName, $lastName, $contactPhone, $contactEmail, $accessToken);
+                    if ($newContactId) {
+                        $formData['contactId'] = $newContactId;
+                        error_log("Successfully linked new Contact ID: " . $newContactId);
+                    }
+                }
+            } else if (empty($formData['contactId'])) {
+                // Scenario 2A: Account exists, but Contact does not exist.
+                // Create the Contact linked to the existing Account.
+                $firstName = $formData['firstName'] ?? '';
+                $lastName = $formData['lastName'] ?? '';
+                $contactPhone = $formData['contactPhone'] ?? $customerMobile;
+                $contactEmail = $formData['contactEmail'] ?? $customerEmail;
+
+                error_log("Creating Contact in Salesforce linked to existing Account ID: " . $formData['accountId']);
+                $newContactId = createSalesforceContact($formData['accountId'], $firstName, $lastName, $contactPhone, $contactEmail, $accessToken);
+                if ($newContactId) {
+                    $formData['contactId'] = $newContactId;
+                    error_log("Successfully linked new Contact ID: " . $newContactId);
                 }
             }
 
@@ -1414,7 +1604,58 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 error_log('Error saving service request to DB: ' . $dbEx->getMessage());
             }
 
-            $result = registerCaseAccountAsset($formData, $accessToken);
+            // Prepare Salesforce request payload
+            $salesforceData = $formData;
+
+            // Build the asset array item
+            $assetItem = [];
+            $assetFields = [
+                'assetId',
+                'assetName',
+                'product2Id',
+                'purchaseDate',
+                'warrantyType',
+                'serialNumber',
+                'price',
+                'InstallDates',
+                'InstallDate',
+                'installDate',
+                'purpose',
+                'priority',
+                'callType',
+                'Source',
+                'description'
+            ];
+            foreach ($assetFields as $field) {
+                if (isset($salesforceData[$field])) {
+                    $assetItem[$field] = $salesforceData[$field];
+                    unset($salesforceData[$field]);
+                }
+            }
+            // Nest it inside 'assets' array as required by the Salesforce REST API
+            $salesforceData['assets'] = [$assetItem];
+
+            // If contactId is present, remove contact details from the payload to avoid duplicate detection errors in Salesforce Apex REST API
+            if (!empty($salesforceData['contactId'])) {
+                unset($salesforceData['firstName']);
+                unset($salesforceData['lastName']);
+                unset($salesforceData['contactPhone']);
+                unset($salesforceData['contactEmail']);
+            }
+
+            // If accountId is present, remove account details from the payload to avoid duplicate account validation errors
+            if (!empty($salesforceData['accountId'])) {
+                unset($salesforceData['accountName']);
+                unset($salesforceData['accountPhone']);
+                unset($salesforceData['accountCategory']);
+                unset($salesforceData['billingStreet']);
+                unset($salesforceData['billingCity']);
+                unset($salesforceData['billingState']);
+                unset($salesforceData['billingCountry']);
+                unset($salesforceData['billingPostalCode']);
+            }
+
+            $result = registerCaseAccountAsset($salesforceData, $accessToken);
 
             // Update database with Salesforce response
             try {
@@ -1502,6 +1743,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             $result = searchGSTPAN($gstinOrPan, $accessToken);
             echo json_encode($result);
+            break;
+
+        case 'clearSession':
+            unset($_SESSION['service_request_token']);
+            unset($_SESSION['verified_mobile']);
+            unset($_SESSION['salesforce_token']);
+            if (session_status() === PHP_SESSION_ACTIVE || session_id() !== '') {
+                session_destroy();
+            }
+            echo json_encode(['success' => true]);
             break;
 
         default:
