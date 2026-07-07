@@ -61,6 +61,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let contactId = null;
     let accountId = null;
     let searchGstPanVal = '';
+    let wasGstOrPanMissingInFetchedData = false;
     let existingAddresses = [];
     let registeredAssets = [];
     let productsList = []; // Item Master Product2 array
@@ -274,6 +275,28 @@ document.addEventListener('DOMContentLoaded', () => {
                     showFieldError('email', 'Please enter a valid email address (e.g., name@domain.com).');
                 } else {
                     clearFieldError('email');
+                }
+            }
+        }
+
+        if (event.target && event.target.id === 'mobileNumberReadonly') {
+            const mobileVal = event.target.value.trim();
+            if (mobileVal) {
+                if (mobileVal.length !== 10 || !/^[0-9]{10}$/.test(mobileVal)) {
+                    showFieldError('mobileNumberReadonly', 'Please enter a valid 10-digit mobile number.');
+                } else {
+                    clearFieldError('mobileNumberReadonly');
+                }
+            }
+        }
+
+        if (event.target && event.target.id === 'alternateMobile') {
+            const altMobileVal = event.target.value.trim();
+            if (altMobileVal) {
+                if (altMobileVal.length !== 10 || !/^[0-9]{10}$/.test(altMobileVal)) {
+                    showFieldError('alternateMobile', 'Please enter a valid 10-digit alternate mobile number.');
+                } else {
+                    clearFieldError('alternateMobile');
                 }
             }
         }
@@ -515,8 +538,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (contact.Email) {
                 document.getElementById('email').value = contact.Email;
-                document.getElementById('email').readOnly = true;
-                document.getElementById('email').classList.add('readonly-input');
+                document.getElementById('email').readOnly = false;
+                document.getElementById('email').classList.remove('readonly-input');
+            } else {
+                document.getElementById('email').value = '';
+                document.getElementById('email').readOnly = false;
+                document.getElementById('email').classList.remove('readonly-input');
             }
         }
 
@@ -534,6 +561,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.getElementById('companyName').value = defaultAccount.accountName || '';
                 document.getElementById('companyName').readOnly = true;
                 document.getElementById('companyName').classList.add('readonly-input');
+
+                const hasGst = !!(defaultAccount.gstin && defaultAccount.gstin.trim());
+                const hasPan = !!(defaultAccount.pan && defaultAccount.pan.trim());
+                wasGstOrPanMissingInFetchedData = (!hasGst || !hasPan);
 
                 // Always show GSTIN section for Scenario 1
                 gstinDisplaySection.classList.remove('hidden');
@@ -918,15 +949,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 const nameInput  = document.getElementById('name');
                 const emailInput = document.getElementById('email');
 
+                wasGstOrPanMissingInFetchedData = false;
+
                 if (existingContact) {
-                    // Contact already exists - prefill and lock as readonly
+                    // Contact already exists - prefill name (readonly) and email (editable)
                     nameInput.value    = existingContact.contactName || '';
                     nameInput.readOnly = true;
                     nameInput.classList.add('readonly-input');
 
                     emailInput.value    = existingContact.Email || '';
-                    emailInput.readOnly = true;
-                    emailInput.classList.add('readonly-input');
+                    emailInput.readOnly = false;
+                    emailInput.classList.remove('readonly-input');
                 } else {
                     // No existing contact - clear fields so user can type their details
                     nameInput.value    = '';
@@ -973,6 +1006,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 activeScenario = 'Scenario_2B';
                 accountId = null;
                 contactId = null;
+                wasGstOrPanMissingInFetchedData = false;
 
                 gstPanSearchSection.classList.add('hidden');
                 mobileNumberDisplaySection.classList.remove('hidden');
@@ -1271,7 +1305,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (selectedAsset) {
                     // For registered assets the family isn't returned, so show asset name as-is
                     productName.value    = selectedAsset.assetName || '';
-                    productCategory.value = '';
+                    
+                    let assetCategory = '';
+                    if (selectedAsset.productId && productsList.length > 0) {
+                        const matchedProduct = productsList.find(p => p.salesforceId === selectedAsset.productId);
+                        if (matchedProduct) {
+                            assetCategory = matchedProduct.family || '';
+                        }
+                    }
+                    productCategory.value = assetCategory;
+
                     serialNumber.value   = selectedAsset.serialNumber || '';
                     purchaseDate.value   = selectedAsset.purchaseDate || '';
                     if (installationDate) {
@@ -1548,17 +1591,9 @@ document.addEventListener('DOMContentLoaded', () => {
         e.preventDefault();
 
         function validateCustomerDetails() {
-            if (gstinInputSection.classList.contains('hidden')) {
-                gstinInput.removeAttribute('required');
-            } else {
-                gstinInput.setAttribute('required', 'required');
-            }
-
-            if (panInputSection.classList.contains('hidden')) {
-                panInput.removeAttribute('required');
-            } else {
-                panInput.setAttribute('required', 'required');
-            }
+            // Remove hard-coded required from GST and PAN fields
+            gstinInput.removeAttribute('required');
+            panInput.removeAttribute('required');
 
             if (gstinPanAttachmentGroup.classList.contains('hidden')) {
                 gstinPanAttachment.removeAttribute('required');
@@ -1569,10 +1604,22 @@ document.addEventListener('DOMContentLoaded', () => {
             const requiredResult = validateVisibleRequiredControls(form);
             let firstInvalid = requiredResult.firstInvalid || null;
 
+            // Scenario 2B GST/PAN validations
             const gstSectionVisible = !gstinInputSection.classList.contains('hidden');
             const panSectionVisible = !panInputSection.classList.contains('hidden');
             const gstVal = gstinInput.value.trim().toUpperCase();
             const panVal = panInput.value.trim().toUpperCase();
+
+            clearFieldError('gstinInput');
+            clearFieldError('panInput');
+
+            if (gstSectionVisible || panSectionVisible) {
+                if (!gstVal && !panVal) {
+                    showFieldError('gstinInput', 'Please enter either a GST Number or a PAN Number.');
+                    showFieldError('panInput', 'Please enter either a GST Number or a PAN Number.');
+                    if (!firstInvalid) firstInvalid = gstinInput;
+                }
+            }
 
             if (gstSectionVisible && gstVal && !validateGST(gstVal)) {
                 showFieldError('gstinInput', 'Invalid GST Number format. Required: 15 characters (e.g., 22AAAAA0000A1Z5)');
@@ -1592,6 +1639,72 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
 
+            // Scenario 1 GST/PAN validations
+            if (activeScenario === 'Scenario_1') {
+                const gstinReadonly = document.getElementById('gstinReadonly');
+                const panReadonly = document.getElementById('panReadonly');
+                const gstValSR1 = gstinReadonly ? gstinReadonly.value.trim().toUpperCase() : '';
+                const panValSR1 = panReadonly ? panReadonly.value.trim().toUpperCase() : '';
+
+                clearFieldError('gstinReadonly');
+                clearFieldError('panReadonly');
+
+                if (wasGstOrPanMissingInFetchedData) {
+                    if (!gstValSR1 && !panValSR1) {
+                        showFieldError('gstinReadonly', 'Please enter either a GST Number or a PAN Number.');
+                        showFieldError('panReadonly', 'Please enter either a GST Number or a PAN Number.');
+                        if (!firstInvalid) firstInvalid = gstinReadonly;
+                    }
+                }
+
+                if (gstinReadonly && gstValSR1) {
+                    if (!validateGST(gstValSR1)) {
+                        showFieldError('gstinReadonly', 'Invalid GST Number format. Required: 15 characters (e.g., 22AAAAA0000A1Z5)');
+                        if (!firstInvalid) firstInvalid = gstinReadonly;
+                    }
+                }
+
+                if (panReadonly && panValSR1) {
+                    if (!validatePAN(panValSR1)) {
+                        showFieldError('panReadonly', 'Invalid PAN Number format. Required: 10 characters (e.g., ABCDE1234F)');
+                        if (!firstInvalid) firstInvalid = panReadonly;
+                    }
+                }
+
+                if (gstValSR1 && panValSR1 && gstValSR1.length >= 12) {
+                    const embeddedPan = gstValSR1.substring(2, 12);
+                    if (embeddedPan !== panValSR1) {
+                        showFieldError('panReadonly', 'PAN Number does not match the PAN embedded in GST Number (positions 3-12).');
+                        if (!firstInvalid) firstInvalid = panReadonly;
+                    }
+                }
+            }
+
+            // Mobile Number Readonly validation
+            const mobileInput = document.getElementById('mobileNumberReadonly');
+            const mobileVal = mobileInput ? mobileInput.value.trim() : '';
+            if (mobileInput) {
+                if (!mobileVal || mobileVal.length !== 10 || !/^[0-9]{10}$/.test(mobileVal)) {
+                    showFieldError('mobileNumberReadonly', 'Please enter a valid 10-digit mobile number.');
+                    if (!firstInvalid) firstInvalid = mobileInput;
+                } else {
+                    clearFieldError('mobileNumberReadonly');
+                }
+            }
+
+            // Alternate Mobile Number validation
+            const altMobileInput = document.getElementById('alternateMobile');
+            const altMobileVal = altMobileInput ? altMobileInput.value.trim() : '';
+            if (altMobileInput && altMobileVal) {
+                if (altMobileVal.length !== 10 || !/^[0-9]{10}$/.test(altMobileVal)) {
+                    showFieldError('alternateMobile', 'Please enter a valid 10-digit alternate mobile number.');
+                    if (!firstInvalid) firstInvalid = altMobileInput;
+                } else {
+                    clearFieldError('alternateMobile');
+                }
+            }
+
+            // Email validation
             const emailInput = document.getElementById('email');
             const emailVal = emailInput ? emailInput.value.trim() : '';
             if (emailInput && emailVal && !validateEmail(emailVal)) {
@@ -1676,161 +1789,176 @@ document.addEventListener('DOMContentLoaded', () => {
         showGlobalLoader('Submitting service request to Salesforce...');
 
         try {
-            // Loop through each product card to submit separate Salesforce request cases
-            const submitPromises = productCards.map(async (idx) => {
-                const formData = {};
+            // Capture Alternate Mobile once for the payload
+            const altMobileVal = document.getElementById('alternateMobile')?.value?.trim() || '';
+            const currentMobileVal = document.getElementById('mobileNumberReadonly').value.trim();
 
-                // Build contact & business parameters based on Screen 1 Scenario
-                if (activeScenario === 'Scenario_1') {
-                    formData.contactId = contactId;
+            const formData = {};
+            if (altMobileVal) {
+                formData.alternateMobile = altMobileVal;
+                formData.alternateMobileNumber = altMobileVal;
+            }
 
-                    const selectedAddress = customerType.value;
-                    if (selectedAddress && selectedAddress.startsWith('account_')) {
-                        // Read accountId from the selected option's dataset (set when building dropdown)
-                        const selectedOption = customerType.options[customerType.selectedIndex];
-                        formData.accountId = selectedOption.dataset.accountId || accountId;
-                    } else if (selectedAddress === 'new') {
-                        formData.accountName     = companyName.value.trim();
-                        formData.accountPhone    = mobileNumber.value;
-                        formData.accountCategory = 'Direct';
-                        formData.billingStreet      = document.getElementById('address1').value;
-                        formData.billingCity        = document.getElementById('city').value;
-                        formData.billingState       = document.getElementById('state').value;
-                        formData.billingCountry     = document.getElementById('country').value || 'India';
-                        formData.billingPostalCode  = document.getElementById('zipcode').value;
-                    } else {
-                        // Default: use the known accountId
-                        formData.accountId = accountId;
-                    }
-                    // Include optional GSTIN / PAN if provided by user
-                    const gstinVal = gstinReadonly?.value?.trim();
-                    if (gstinVal) {
-                        formData.gstin = gstinVal;
-                    }
-                    const panVal = panReadonly?.value?.trim();
-                    if (panVal) {
-                        formData.pan = panVal;
-                    }
-                    if (contactId) {
-                        // Existing contact was found during GST/PAN search - just pass the IDs
-                        formData.contactId = contactId;
-                    } else {
-                        // New contact registration linked to existing account
-                        const fullNameVal = document.getElementById('name').value.trim();
-                        const parts = fullNameVal.split(' ');
-                        formData.firstName    = parts[0] || '';
-                        formData.lastName     = parts.slice(1).join(' ') || parts[0];
-                        formData.contactPhone = mobileNumber.value;
-                        formData.contactEmail = document.getElementById('email').value.trim();
-                    }
+            // Build contact & business parameters based on Screen 1 Scenario
+            if (activeScenario === 'Scenario_1') {
+                formData.contactId = contactId;
 
-
-                } else if (activeScenario === 'Scenario_2A') {
-                    formData.accountId = accountId;
-
-                    // Include GSTIN / PAN retrieved during verification search
-                    const gstinVal = gstinReadonly?.value?.trim();
-                    if (gstinVal) {
-                        formData.gstin = gstinVal;
-                    }
-                    const panVal = panReadonly?.value?.trim();
-                    if (panVal) {
-                        formData.pan = panVal;
-                    }
-
-                    if (contactId) {
-                        // Existing contact was found during GST/PAN search - just pass the IDs
-                        formData.contactId = contactId;
-                    } else {
-                        // New contact registration linked to existing account
-                        const fullNameVal = document.getElementById('name').value.trim();
-                        const parts = fullNameVal.split(' ');
-                        formData.firstName    = parts[0] || '';
-                        formData.lastName     = parts.slice(1).join(' ') || parts[0];
-                        formData.contactPhone = mobileNumber.value;
-                        formData.contactEmail = document.getElementById('email').value.trim();
-                    }
-
-                    const selectedAddress = customerType.value;
-                    if (selectedAddress === 'new') {
-                        formData.billingStreet     = document.getElementById('address1').value;
-                        formData.billingCity       = document.getElementById('city').value;
-                        formData.billingState      = document.getElementById('state').value;
-                        formData.billingCountry    = document.getElementById('country').value || 'India';
-                        formData.billingPostalCode = document.getElementById('zipcode').value;
-                    }
-                } else if (activeScenario === 'Scenario_2B') {
-                    formData.accountName = companyName.value.trim();
-                    formData.accountPhone = mobileNumber.value;
+                const selectedAddress = customerType.value;
+                if (selectedAddress && selectedAddress.startsWith('account_')) {
+                    // Read accountId from the selected option's dataset (set when building dropdown)
+                    const selectedOption = customerType.options[customerType.selectedIndex];
+                    formData.accountId = selectedOption.dataset.accountId || accountId;
+                } else if (selectedAddress === 'new') {
+                    formData.accountName     = companyName.value.trim();
+                    formData.accountPhone    = currentMobileVal;
                     formData.accountCategory = 'Direct';
-                    formData.gstin = gstinInput.value.trim().toUpperCase();
-                    formData.pan = panInput.value.trim().toUpperCase();
-
-                    formData.billingStreet = document.getElementById('address1').value;
-                    formData.billingCity = document.getElementById('city').value;
-                    formData.billingState = document.getElementById('state').value;
-                    formData.billingCountry = document.getElementById('country').value || 'India';
-                    formData.billingPostalCode = document.getElementById('zipcode').value;
-
-                    const fullNameVal = document.getElementById('name').value.trim();
-                    const parts = fullNameVal.split(' ');
-                    formData.firstName = parts[0] || '';
-                    formData.lastName = parts.slice(1).join(' ') || parts[0];
-                    formData.contactPhone = mobileNumber.value;
-                    formData.contactEmail = document.getElementById('email').value.trim();
+                    formData.billingStreet      = document.getElementById('address1').value;
+                    formData.billingCity        = document.getElementById('city').value;
+                    formData.billingState       = document.getElementById('state').value;
+                    formData.billingCountry     = document.getElementById('country').value || 'India';
+                    formData.billingPostalCode  = document.getElementById('zipcode').value;
+                } else {
+                    // Default: use the known accountId
+                    formData.accountId = accountId;
+                }
+                // Include optional GSTIN / PAN if provided by user
+                const gstinVal = gstinReadonly?.value?.trim();
+                if (gstinVal) {
+                    formData.gstin = gstinVal;
+                }
+                const panVal = panReadonly?.value?.trim();
+                if (panVal) {
+                    formData.pan = panVal;
                 }
 
-                // Build product details for this card
+                // For PATCH update or duplicate checks
+                formData.contactPhone = currentMobileVal;
+                formData.contactEmail = document.getElementById('email').value.trim();
+
+                if (contactId) {
+                    formData.contactId = contactId;
+                } else {
+                    // New contact registration linked to existing account
+                    const fullNameVal = document.getElementById('name').value.trim();
+                    const parts = fullNameVal.split(' ');
+                    formData.firstName    = parts[0] || '';
+                    formData.lastName     = parts.slice(1).join(' ') || parts[0];
+                }
+
+            } else if (activeScenario === 'Scenario_2A') {
+                formData.accountId = accountId;
+
+                // Include GSTIN / PAN retrieved during verification search
+                const gstinVal = gstinReadonly?.value?.trim();
+                if (gstinVal) {
+                    formData.gstin = gstinVal;
+                }
+                const panVal = panReadonly?.value?.trim();
+                if (panVal) {
+                    formData.pan = panVal;
+                }
+
+                // For PATCH update or duplicate checks
+                formData.contactPhone = currentMobileVal;
+                formData.contactEmail = document.getElementById('email').value.trim();
+
+                if (contactId) {
+                    formData.contactId = contactId;
+                } else {
+                    // New contact registration linked to existing account
+                    const fullNameVal = document.getElementById('name').value.trim();
+                    const parts = fullNameVal.split(' ');
+                    formData.firstName    = parts[0] || '';
+                    formData.lastName     = parts.slice(1).join(' ') || parts[0];
+                }
+
+                const selectedAddress = customerType.value;
+                if (selectedAddress === 'new') {
+                    formData.billingStreet     = document.getElementById('address1').value;
+                    formData.billingCity       = document.getElementById('city').value;
+                    formData.billingState      = document.getElementById('state').value;
+                    formData.billingCountry    = document.getElementById('country').value || 'India';
+                    formData.billingPostalCode = document.getElementById('zipcode').value;
+                }
+            } else if (activeScenario === 'Scenario_2B') {
+                formData.accountName = companyName.value.trim();
+                formData.accountPhone = currentMobileVal;
+                formData.accountCategory = 'Direct';
+                formData.gstin = gstinInput.value.trim().toUpperCase();
+                formData.pan = panInput.value.trim().toUpperCase();
+
+                formData.billingStreet = document.getElementById('address1').value;
+                formData.billingCity = document.getElementById('city').value;
+                formData.billingState = document.getElementById('state').value;
+                formData.billingCountry = document.getElementById('country').value || 'India';
+                formData.billingPostalCode = document.getElementById('zipcode').value;
+
+                const fullNameVal = document.getElementById('name').value.trim();
+                const parts = fullNameVal.split(' ');
+                formData.firstName = parts[0] || '';
+                formData.lastName = parts.slice(1).join(' ') || parts[0];
+                formData.contactPhone = currentMobileVal;
+                formData.contactEmail = document.getElementById('email').value.trim();
+            }
+
+            // Build assets array for all active product cards
+            const assets = productCards.map((idx) => {
+                const assetItem = {};
                 const assetSelectVal = document.getElementById('assetNumber_' + idx).value;
-                if (assetSelectVal !== 'other') {
-                    formData.assetId = assetSelectVal;
+                if (assetSelectVal && assetSelectVal !== 'other') {
+                    assetItem.assetId = assetSelectVal;
                 } else {
                     // Use raw product name (without category prefix) for Salesforce payload
                     const productNameEl = document.getElementById('productName_' + idx);
-                    formData.assetName = (productNameEl.dataset.rawName || productNameEl.value).trim();
-                    formData.product2Id = document.getElementById('modelNumber_' + idx).value;
-                    formData.purchaseDate = document.getElementById('purchaseDate_' + idx).value;
-                    formData.warrantyType = mapWarrantyTypeToSalesforce(document.getElementById('warrantyStatus_' + idx).value);
-                    formData.serialNumber = document.getElementById('serialNumber_' + idx).value.trim();
-                    formData.price = 0;
+                    assetItem.assetName = (productNameEl.dataset.rawName || productNameEl.value).trim();
+                    assetItem.product2Id = document.getElementById('modelNumber_' + idx).value;
+                    assetItem.purchaseDate = document.getElementById('purchaseDate_' + idx).value;
+                    assetItem.warrantyType = mapWarrantyTypeToSalesforce(document.getElementById('warrantyStatus_' + idx).value);
+                    assetItem.serialNumber = document.getElementById('serialNumber_' + idx).value.trim();
+                    assetItem.price = 0;
                     const instDateInput = document.getElementById('installationDate_' + idx);
                     if (instDateInput && instDateInput.value) {
-                        formData.InstallDates = instDateInput.value;
-                        formData.InstallDate = instDateInput.value;
-                        formData.installDate = instDateInput.value;
+                        assetItem.InstallDates = instDateInput.value;
+                        assetItem.InstallDate = instDateInput.value;
+                        assetItem.installDate = instDateInput.value;
                     }
                 }
 
                 // Service Request details for this card
-                // Note: Salesforce endpoint expects 'purpose' not 'serviceCategory'
-                formData.purpose = document.getElementById('serviceCategory_' + idx).value;
-                formData.priority = 'Normal';
-                formData.callType = document.getElementById('warrantyStatus_' + idx).value;
+                assetItem.purpose = document.getElementById('serviceCategory_' + idx).value;
+                assetItem.priority = 'Normal';
+                assetItem.callType = document.getElementById('warrantyStatus_' + idx).value;
+                assetItem.Source = 'Web';
 
                 const issueDesc = document.getElementById('issueDescription_' + idx).value;
                 if (issueDesc && issueDesc.trim() !== '') {
-                    formData.description = issueDesc.trim();
+                    assetItem.description = issueDesc.trim();
                 }
 
-                const response = await fetch(API_URL, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        action: 'submitServiceRequest',
-                        formData: formData,
-                        customerName: document.getElementById('name')?.value?.trim() || '',
-                        customerEmail: document.getElementById('email')?.value?.trim() || '',
-                        customerMobile: mobileNumber?.value || ''
-                    })
-                });
-
-                return await response.json();
+                return assetItem;
             });
 
-            const results = await Promise.all(submitPromises);
-            console.log('Submission loop results:', results);
+            formData.assets = assets;
+
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    action: 'submitServiceRequest',
+                    formData: formData,
+                    customerName: document.getElementById('name')?.value?.trim() || '',
+                    customerEmail: document.getElementById('email')?.value?.trim() || '',
+                    customerMobile: currentMobileVal,
+                    alternateMobile: altMobileVal,
+                    alternateMobileNumber: altMobileVal
+                })
+            });
+
+            const submitResult = await response.json();
+            const results = [submitResult];
+            console.log('Submission result:', results);
 
             const successfulResults = results.filter(r =>
                 r.success === true ||
@@ -1842,28 +1970,81 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (successfulResults.length === results.length) {
                 const caseIds = successfulResults.map((r, i) => {
-                    const nestedCase = (r.childCases && r.childCases[0]) ? (r.childCases[0].caseNumber || r.childCases[0].childSRId) : null;
-                    return r.caseNumber || r.CaseNumber || nestedCase || r.parentSRId || r.caseId || r.childSRId || `TRU-${Math.floor(10000 + Math.random() * 90000)}`;
+                    if (r.childCases && r.childCases.length > 0) {
+                        return r.childCases.map(c => c.ticketNumber || c.caseNumber || c.childSRId).filter(Boolean).join(', ');
+                    }
+                    return r.ticketNumber || r.TicketNumber || r.caseNumber || r.CaseNumber || r.parentSRId || r.caseId || r.childSRId || `T&B00${Math.floor(10000 + Math.random() * 90000)}`;
                 }).join(', ');
 
                 form.classList.add('hidden');
                 document.querySelector('.form-header').classList.add('hidden');
                 ticketIdDisplay.textContent = caseIds;
 
-                // Show summary using the actual first active product card index
-                const firstIdx = productCards[0];
-                document.getElementById('detailMobileNumber').textContent = mobileNumber.value;
-                const svcCatEl = document.getElementById('serviceCategory_' + firstIdx);
-                document.getElementById('detailPurpose').textContent = svcCatEl ? svcCatEl.options[svcCatEl.selectedIndex].text : '';
-                const modelEl = document.getElementById('modelNumber_' + firstIdx);
-                document.getElementById('detailModel').textContent = (document.getElementById('productName_' + firstIdx) || {}).value || (modelEl ? modelEl.options[modelEl.selectedIndex].text : '');
-                document.getElementById('detailSerial').textContent = (document.getElementById('serialNumber_' + firstIdx) || {}).value || '';
+                // Show summary details of the created request(s)
+                const detailsContainer = document.getElementById('serviceRequestDetails');
+                
+                if (productCards.length > 1) {
+                    let rowsHtml = '';
+                    productCards.forEach((idx, i) => {
+                        const svcCatEl = document.getElementById('serviceCategory_' + idx);
+                        const purpose = svcCatEl ? svcCatEl.options[svcCatEl.selectedIndex].text : '';
+                        const modelEl = document.getElementById('modelNumber_' + idx);
+                        const model = (document.getElementById('productName_' + idx) || {}).value || (modelEl ? modelEl.options[modelEl.selectedIndex].text : '');
+                        const serial = (document.getElementById('serialNumber_' + idx) || {}).value || '-';
+                        const warrantySelectEl = document.getElementById('warrantyStatus_' + idx);
+                        const warranty = warrantySelectEl ? warrantySelectEl.options[warrantySelectEl.selectedIndex].text : '';
+                        
+                        // Map the ticket number from the response childCases array if available
+                        const childCase = (submitResult.childCases && submitResult.childCases[i]) ? submitResult.childCases[i] : null;
+                        const ticketNo = childCase ? (childCase.ticketNumber || childCase.childSRId) : (submitResult.parentSRId || 'Pending');
 
-                const warrantySelectEl = document.getElementById('warrantyStatus_' + firstIdx);
-                document.getElementById('detailWarranty').textContent = warrantySelectEl ? warrantySelectEl.options[warrantySelectEl.selectedIndex].text : '';
-                document.getElementById('detailStatus').textContent = successfulResults[0].status || 'Pending';
+                        rowsHtml += `
+                            <tr style="border-bottom: 1px solid #dee2e6;">
+                                <td style="padding: 12px 10px; font-weight: bold; color: #0056b3;">${ticketNo}</td>
+                                <td style="padding: 12px 10px;">${model}</td>
+                                <td style="padding: 12px 10px;">${serial}</td>
+                                <td style="padding: 12px 10px;">${purpose}</td>
+                                <td style="padding: 12px 10px;">${warranty}</td>
+                            </tr>
+                        `;
+                    });
 
-                document.getElementById('serviceRequestDetails').style.display = 'block';
+                    detailsContainer.innerHTML = `
+                        <h3 style="margin-bottom: 15px; color: #333; font-weight: 600;">Service Request Summary</h3>
+                        <p style="margin-bottom: 15px;"><strong>Registered Mobile:</strong> ${mobileNumber.value}</p>
+                        <div style="overflow-x: auto;">
+                            <table style="width: 100%; border-collapse: collapse; background: #fff; border-radius: 6px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                                <thead>
+                                    <tr style="background: #e9ecef; border-bottom: 2px solid #dee2e6; text-align: left;">
+                                        <th style="padding: 12px 10px; font-weight: 600;">Ticket Number</th>
+                                        <th style="padding: 12px 10px; font-weight: 600;">Model/Product</th>
+                                        <th style="padding: 12px 10px; font-weight: 600;">Serial Number</th>
+                                        <th style="padding: 12px 10px; font-weight: 600;">Category</th>
+                                        <th style="padding: 12px 10px; font-weight: 600;">Warranty Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${rowsHtml}
+                                </tbody>
+                            </table>
+                        </div>
+                    `;
+                } else {
+                    // For single product requests, use the default structure
+                    const firstIdx = productCards[0];
+                    document.getElementById('detailMobileNumber').textContent = mobileNumber.value;
+                    const svcCatEl = document.getElementById('serviceCategory_' + firstIdx);
+                    document.getElementById('detailPurpose').textContent = svcCatEl ? svcCatEl.options[svcCatEl.selectedIndex].text : '';
+                    const modelEl = document.getElementById('modelNumber_' + firstIdx);
+                    document.getElementById('detailModel').textContent = (document.getElementById('productName_' + firstIdx) || {}).value || (modelEl ? modelEl.options[modelEl.selectedIndex].text : '');
+                    document.getElementById('detailSerial').textContent = (document.getElementById('serialNumber_' + firstIdx) || {}).value || '';
+
+                    const warrantySelectEl = document.getElementById('warrantyStatus_' + firstIdx);
+                    document.getElementById('detailWarranty').textContent = warrantySelectEl ? warrantySelectEl.options[warrantySelectEl.selectedIndex].text : '';
+                    document.getElementById('detailStatus').textContent = submitResult.status || 'Success';
+                }
+
+                detailsContainer.style.display = 'block';
                 successMessage.classList.remove('hidden');
                 updateProgress('submit');
                 showToast('Your service request was submitted successfully.', 'success');

@@ -123,7 +123,8 @@ get_header();
                         <div id="mobileNumberDisplaySection" class="hidden">
                             <div class="form-group full-width">
                                 <label for="mobileNumberReadonly">Mobile Number <span class="required-asterisk">*</span></label>
-                                <input type="tel" id="mobileNumberReadonly" name="mobileNumberReadonly" readonly disabled class="readonly-input">
+                                <input type="tel" id="mobileNumberReadonly" name="mobileNumberReadonly" placeholder="Mobile Number" maxlength="10">
+                                <span class="error-message" id="mobileNumberReadonly-error"></span>
                             </div>
                         </div>
 
@@ -139,6 +140,12 @@ get_header();
                             <span class="error-message" id="email-error"></span>
                         </div>
 
+                        <div class="form-group">
+                            <label for="alternateMobile">Alternate Mobile Number</label>
+                            <input type="tel" id="alternateMobile" name="alternateMobile" placeholder="Alternate Mobile Number" maxlength="10">
+                            <span class="error-message" id="alternateMobile-error"></span>
+                        </div>
+
                         <!-- Company/Business Name -->
                         <div class="form-group" id="companyNameGroup">
                             <label for="companyName">Business / Company Name <span class="required-asterisk">*</span></label>
@@ -150,11 +157,13 @@ get_header();
                         <div class="form-group hidden" id="gstinDisplaySection">
                             <label for="gstinReadonly">GSTIN</label>
                             <input type="text" id="gstinReadonly" name="gstinReadonly" readonly class="readonly-input" placeholder="GSTIN (15 characters)" maxlength="15">
+                            <span class="error-message" id="gstinReadonly-error"></span>
                         </div>
 
                         <div class="form-group hidden" id="panDisplaySection">
                             <label for="panReadonly">PAN</label>
                             <input type="text" id="panReadonly" name="panReadonly" readonly class="readonly-input" placeholder="PAN (10 characters)" maxlength="10">
+                            <span class="error-message" id="panReadonly-error"></span>
                         </div>
 
                         <!-- GSTIN & PAN inputs (For Scenario 2B registration) -->
@@ -253,13 +262,13 @@ get_header();
             <!-- Success Message Container -->
             <div id="successMessage" class="success-message hidden">
                 <div class="success-icon"><i class="bi bi-check-circle-fill"></i></div>
-                <h2>Service Request Submitted!</h2>
-                <p>If your mobile number has active WhatsApp, you will shortly receive a message from us with Service
-                    call details.</p>
-                <div class="ticket-info">
+                <h2>Thank you, Your Services Request number <strong id="ticketIdDisplay">T&B0000000</strong> has been registered and is currently being processed.</h2>
+                <!-- <p>If your mobile number has active WhatsApp, you will shortly receive a message from us with Service
+                    call details.</p> -->
+                <!-- <div class="ticket-info">
                     <span class="label">Case Number:</span>
-                    <strong id="ticketIdDisplay">TRU-00000</strong>
-                </div>
+                    <strong id="ticketIdDisplayCommented">T&B0000000</strong>
+                </div> -->
 
                 <!-- Service Request Details -->
                 <div id="serviceRequestDetails" class="service-request-details" style="display: none; margin-top: 30px; text-align: left; background: #f9f9f9; padding: 20px; border-radius: 8px;">

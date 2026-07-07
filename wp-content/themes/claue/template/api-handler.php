@@ -1180,7 +1180,7 @@ function createSalesforceAccount($name, $phone, $gstin, $pan, $street, $city, $s
 /**
  * Create Contact in Salesforce linked to an Account
  */
-function createSalesforceContact($accountId, $firstName, $lastName, $phone, $email, $accessToken)
+function createSalesforceContact($accountId, $firstName, $lastName, $phone, $email, $alternatePhone, $accessToken)
 {
     $url = SF_API_URL . '/services/data/v58.0/sobjects/Contact';
 
@@ -1195,6 +1195,9 @@ function createSalesforceContact($accountId, $firstName, $lastName, $phone, $ema
         'MobilePhone' => $phone,
         'Email' => $email
     ];
+    if (!empty($alternatePhone)) {
+        $requestData['OtherPhone'] = $alternatePhone;
+    }
     $data = json_encode($requestData);
 
     error_log('=== Create Salesforce Contact Request ===');
@@ -1256,6 +1259,121 @@ function createSalesforceContact($accountId, $firstName, $lastName, $phone, $ema
 
     error_log('✗ Contact Creation Failed in Salesforce');
     return null;
+}
+
+/**
+ * Retrieve Account details from Salesforce
+ */
+function retrieveSalesforceAccount($accountId, $accessToken)
+{
+    $url = SF_API_URL . '/services/data/v58.0/sobjects/Account/' . $accountId;
+
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, [
+        'Authorization: Bearer ' . $accessToken
+    ]);
+
+    $response = curl_exec($ch);
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+
+    error_log('Retrieve Account Response HTTP Code: ' . $httpCode);
+
+    if ($httpCode === 200) {
+        return json_decode($response, true);
+    }
+    return null;
+}
+
+/**
+ * Update Account details in Salesforce (GST/PAN)
+ */
+function updateSalesforceAccount($accountId, $gstin, $pan, $accessToken)
+{
+    $url = SF_API_URL . '/services/data/v58.0/sobjects/Account/' . $accountId;
+
+    $requestData = [];
+    if (!empty($gstin)) {
+        $requestData['GSTIN__c'] = $gstin;
+    }
+    if (!empty($pan)) {
+        $requestData['PAN__c'] = $pan;
+    }
+
+    if (empty($requestData)) {
+        return true;
+    }
+
+    $data = json_encode($requestData);
+
+    error_log('=== Update Salesforce Account Request ===');
+    error_log('Account ID: ' . $accountId);
+    error_log('API Payload: ' . $data);
+
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PATCH');
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, [
+        'Content-Type: application/json',
+        'Authorization: Bearer ' . $accessToken
+    ]);
+
+    $response = curl_exec($ch);
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+
+    error_log('Update Account Response HTTP Code: ' . $httpCode);
+    error_log('Response: ' . $response);
+
+    return ($httpCode === 204);
+}
+
+/**
+ * Update Contact details in Salesforce (phone, email, alternate mobile)
+ */
+function updateSalesforceContact($contactId, $phone, $email, $alternatePhone, $accessToken)
+{
+    $url = SF_API_URL . '/services/data/v58.0/sobjects/Contact/' . $contactId;
+
+    $requestData = [
+        'Phone' => $phone,
+        'MobilePhone' => $phone,
+        'Email' => $email
+    ];
+    if (!empty($alternatePhone)) {
+        $requestData['OtherPhone'] = $alternatePhone;
+    }
+    $data = json_encode($requestData);
+
+    error_log('=== Update Salesforce Contact Request ===');
+    error_log('Contact ID: ' . $contactId);
+    error_log('API Payload: ' . $data);
+
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PATCH');
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, [
+        'Content-Type: application/json',
+        'Authorization: Bearer ' . $accessToken
+    ]);
+
+    $response = curl_exec($ch);
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+
+    error_log('Update Contact Response HTTP Code: ' . $httpCode);
+    error_log('Response: ' . $response);
+
+    return ($httpCode === 204);
 }
 
 // Main request handler
@@ -1423,6 +1541,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
             $customerEmail = trim($input['customerEmail'] ?? $formData['email'] ?? $formData['contactEmail'] ?? '');
             $customerMobile = trim($input['customerMobile'] ?? $formData['mobileNumber'] ?? $formData['mobile'] ?? $formData['contactPhone'] ?? $formData['accountPhone'] ?? $_SESSION['verified_mobile'] ?? '');
+            $alternateMobile = trim($input['alternateMobileNumber'] ?? $input['alternateMobile'] ?? $formData['alternateMobileNumber'] ?? $formData['alternateMobile'] ?? '');
+
+            if (!empty($alternateMobile)) {
+                $formData['alternateMobileNumber'] = $alternateMobile;
+                $formData['alternateMobile'] = $alternateMobile;
+            }
 
             // Validate email format
             if (!empty($customerEmail) && !filter_var($customerEmail, FILTER_VALIDATE_EMAIL)) {
@@ -1433,8 +1557,48 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 exit;
             }
 
-            // Validate GST and PAN if provided and we are creating a new Account (accountId is empty)
-            if (empty($formData['accountId']) && (isset($formData['gstin']) || isset($formData['pan']))) {
+            // Validate alternate mobile format if provided
+            if (!empty($alternateMobile) && !preg_match('/^[0-9]{10}$/', $alternateMobile)) {
+                echo json_encode([
+                    'success' => false,
+                    'message' => 'Please enter a valid 10-digit alternate mobile number.'
+                ]);
+                exit;
+            }
+
+            // Validate GST and PAN requirement (at least one is required)
+            if (empty($formData['accountId'])) {
+                $submittedGst = trim($formData['gstin'] ?? '');
+                $submittedPan = trim($formData['pan'] ?? '');
+                if (empty($submittedGst) && empty($submittedPan)) {
+                    echo json_encode([
+                        'success' => false,
+                        'message' => 'Please provide either a GST Number or a PAN Number.'
+                    ]);
+                    exit;
+                }
+            } else {
+                // If accountId is present, check if we need to enforce at least one of GSTIN or PAN because either was missing in Salesforce
+                $accountDetails = retrieveSalesforceAccount($formData['accountId'], $accessToken);
+                if ($accountDetails) {
+                    $existingGst = trim($accountDetails['GSTIN__c'] ?? '');
+                    $existingPan = trim($accountDetails['PAN__c'] ?? '');
+                    if (empty($existingGst) || empty($existingPan)) {
+                        $submittedGst = trim($formData['gstin'] ?? '');
+                        $submittedPan = trim($formData['pan'] ?? '');
+                        if (empty($submittedGst) && empty($submittedPan)) {
+                            echo json_encode([
+                                'success' => false,
+                                'message' => 'GSTIN or PAN Number is missing. Please provide at least one.'
+                            ]);
+                            exit;
+                        }
+                    }
+                }
+            }
+
+            // Validate GST and PAN if provided
+            if (isset($formData['gstin']) || isset($formData['pan'])) {
                 $gstin = $formData['gstin'] ?? '';
                 $pan = $formData['pan'] ?? '';
 
@@ -1518,7 +1682,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $contactEmail = $formData['contactEmail'] ?? $customerEmail;
 
                     error_log("Creating Contact in Salesforce linked to new Account ID: " . $newAccountId);
-                    $newContactId = createSalesforceContact($newAccountId, $firstName, $lastName, $contactPhone, $contactEmail, $accessToken);
+                    $newContactId = createSalesforceContact($newAccountId, $firstName, $lastName, $contactPhone, $contactEmail, $alternateMobile, $accessToken);
                     if ($newContactId) {
                         $formData['contactId'] = $newContactId;
                         error_log("Successfully linked new Contact ID: " . $newContactId);
@@ -1533,10 +1697,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $contactEmail = $formData['contactEmail'] ?? $customerEmail;
 
                 error_log("Creating Contact in Salesforce linked to existing Account ID: " . $formData['accountId']);
-                $newContactId = createSalesforceContact($formData['accountId'], $firstName, $lastName, $contactPhone, $contactEmail, $accessToken);
+                $newContactId = createSalesforceContact($formData['accountId'], $firstName, $lastName, $contactPhone, $contactEmail, $alternateMobile, $accessToken);
                 if ($newContactId) {
                     $formData['contactId'] = $newContactId;
                     error_log("Successfully linked new Contact ID: " . $newContactId);
+                }
+            }
+
+            // Update existing Contact / Account in Salesforce if they exist
+            if (!empty($formData['contactId'])) {
+                $contactPhone = $formData['contactPhone'] ?? $customerMobile;
+                $contactEmail = $formData['contactEmail'] ?? $customerEmail;
+                error_log("Updating existing Contact ID in Salesforce: " . $formData['contactId']);
+                updateSalesforceContact($formData['contactId'], $contactPhone, $contactEmail, $alternateMobile, $accessToken);
+            }
+            if (!empty($formData['accountId'])) {
+                $gstin = $formData['gstin'] ?? '';
+                $pan = $formData['pan'] ?? '';
+                if (!empty($gstin) || !empty($pan)) {
+                    error_log("Updating existing Account ID in Salesforce: " . $formData['accountId']);
+                    updateSalesforceAccount($formData['accountId'], $gstin, $pan, $accessToken);
                 }
             }
 
@@ -1607,8 +1787,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Prepare Salesforce request payload
             $salesforceData = $formData;
 
-            // Build the asset array item
-            $assetItem = [];
+            // Build the asset array item or use the existing pre-built assets array
             $assetFields = [
                 'assetId',
                 'assetName',
@@ -1626,14 +1805,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'Source',
                 'description'
             ];
-            foreach ($assetFields as $field) {
-                if (isset($salesforceData[$field])) {
-                    $assetItem[$field] = $salesforceData[$field];
+
+            if (isset($formData['assets']) && is_array($formData['assets'])) {
+                // If the frontend already built the assets collection, use it directly
+                $salesforceData['assets'] = $formData['assets'];
+                // Clean up any individual top-level asset fields
+                foreach ($assetFields as $field) {
                     unset($salesforceData[$field]);
                 }
+            } else {
+                // Build a single asset array item from top-level fields (for backward compatibility)
+                $assetItem = [];
+                foreach ($assetFields as $field) {
+                    if (isset($salesforceData[$field])) {
+                        $assetItem[$field] = $salesforceData[$field];
+                        unset($salesforceData[$field]);
+                    }
+                }
+                // Nest it inside 'assets' array
+                $salesforceData['assets'] = [$assetItem];
             }
-            // Nest it inside 'assets' array as required by the Salesforce REST API
-            $salesforceData['assets'] = [$assetItem];
 
             // If contactId is present, remove contact details from the payload to avoid duplicate detection errors in Salesforce Apex REST API
             if (!empty($salesforceData['contactId'])) {
