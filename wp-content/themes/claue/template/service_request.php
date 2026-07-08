@@ -123,7 +123,7 @@ get_header();
                         <div id="mobileNumberDisplaySection" class="hidden">
                             <div class="form-group full-width">
                                 <label for="mobileNumberReadonly">Mobile Number <span class="required-asterisk">*</span></label>
-                                <input type="tel" id="mobileNumberReadonly" name="mobileNumberReadonly" placeholder="Mobile Number" maxlength="10">
+                                <input type="tel" id="mobileNumberReadonly" name="mobileNumberReadonly" readonly class="readonly-input" placeholder="Mobile Number" maxlength="10">
                                 <span class="error-message" id="mobileNumberReadonly-error"></span>
                             </div>
                         </div>

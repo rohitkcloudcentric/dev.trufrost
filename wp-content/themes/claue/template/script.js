@@ -686,6 +686,8 @@ document.addEventListener('DOMContentLoaded', () => {
         // Show mobile number readonly
         mobileNumberDisplaySection.classList.remove('hidden');
         mobileNumberReadonly.value = mobileNumber.value;
+        mobileNumberReadonly.readOnly = true;
+        mobileNumberReadonly.classList.add('readonly-input');
 
         // Show Customer Info fields
         restOfCustomerInfo.classList.remove('hidden');
@@ -944,6 +946,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 gstPanSearchSection.classList.add('hidden');
                 mobileNumberDisplaySection.classList.remove('hidden');
                 mobileNumberReadonly.value = mobileNumber.value;
+                mobileNumberReadonly.readOnly = true;
+                mobileNumberReadonly.classList.add('readonly-input');
 
                 // --- Auto-populate Contact Info ---
                 const nameInput  = document.getElementById('name');
@@ -1011,6 +1015,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 gstPanSearchSection.classList.add('hidden');
                 mobileNumberDisplaySection.classList.remove('hidden');
                 mobileNumberReadonly.value = mobileNumber.value;
+                mobileNumberReadonly.readOnly = true;
+                mobileNumberReadonly.classList.add('readonly-input');
 
                 companyName.value = '';
                 companyName.readOnly = false;
