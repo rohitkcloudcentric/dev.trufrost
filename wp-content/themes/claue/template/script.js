@@ -641,6 +641,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (data.assetList && data.assetList.length > 0) {
             registeredAssets = data.assetList;
         }
+        refreshAssetDropdowns();
 
         addressSelectGroup.classList.remove('hidden');
     }
@@ -1016,6 +1017,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (data.assetList && data.assetList.length > 0) {
                     registeredAssets = data.assetList;
                 }
+                refreshAssetDropdowns();
 
                 await fetchProducts();
                 revealForm();
@@ -1058,6 +1060,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
 
                 registeredAssets = [];
+                refreshAssetDropdowns();
 
                 // Clear Name & Email inputs for editing
                 document.getElementById('name').value = '';
@@ -1112,9 +1115,73 @@ document.addEventListener('DOMContentLoaded', () => {
     // Refresh asset dropdowns in ALL existing cards when registeredAssets changes
     function refreshAssetDropdowns() {
         productCards.forEach(idx => {
-            const assetSelect = document.getElementById('assetNumber_' + idx);
-            const assetDropdownList = document.getElementById('assetDropdownList_' + idx);
-            if (!assetSelect) return;
+            updateCardAssetMode(idx);
+        });
+    }
+
+    // Configure product card depending on whether customer has registered assets or assets are blank
+    function updateCardAssetMode(idx) {
+        const assetNumberGroup = document.getElementById('assetNumberGroup_' + idx);
+        const assetSelect = document.getElementById('assetNumber_' + idx);
+        const assetDropdownList = document.getElementById('assetDropdownList_' + idx);
+        const modelSelectionGroup = document.getElementById('modelSelectionGroup_' + idx);
+        const modelSelect = document.getElementById('modelNumber_' + idx);
+        const productName = document.getElementById('productName_' + idx);
+        const productCategory = document.getElementById('productCategory_' + idx);
+        const serialNumber = document.getElementById('serialNumber_' + idx);
+        const purchaseDate = document.getElementById('purchaseDate_' + idx);
+
+        if (!assetSelect) return;
+
+        const hasAssets = registeredAssets && registeredAssets.length > 0;
+
+        if (!hasAssets) {
+            // Assets are blank: hide asset selection field and enable product name / model selection
+            if (assetNumberGroup) {
+                assetNumberGroup.classList.add('hidden');
+            }
+            assetSelect.removeAttribute('required');
+            assetSelect.value = '';
+
+            // Reveal Model Selection Group & make model select required
+            if (modelSelectionGroup) {
+                modelSelectionGroup.classList.remove('hidden');
+            }
+            if (modelSelect) {
+                modelSelect.setAttribute('required', 'required');
+            }
+
+            // Enable Product Name & Category inputs for editing/typing
+            if (productName) {
+                productName.readOnly = false;
+                productName.classList.remove('readonly-input');
+            }
+            if (productCategory) {
+                productCategory.readOnly = false;
+                productCategory.classList.remove('readonly-input');
+            }
+
+            // Make Serial Number & Purchase Date optional
+            if (serialNumber) {
+                serialNumber.removeAttribute('required');
+                serialNumber.readOnly = false;
+                serialNumber.classList.remove('readonly-input');
+            }
+            if (purchaseDate) {
+                purchaseDate.removeAttribute('required');
+                purchaseDate.readOnly = false;
+                purchaseDate.classList.remove('readonly-input');
+            }
+
+            // Clear any asset summary badge
+            const badge = document.getElementById('assetSummary_' + idx);
+            if (badge) badge.remove();
+        } else {
+            // Assets exist: show asset selection field
+            if (assetNumberGroup) {
+                assetNumberGroup.classList.remove('hidden');
+            }
+            assetSelect.setAttribute('required', 'required');
 
             // Rebuild native <select> options
             assetSelect.innerHTML = '<option value="">Select an Asset...</option>';
@@ -1133,7 +1200,17 @@ document.addEventListener('DOMContentLoaded', () => {
             if (assetDropdownList) {
                 renderAssetDropdownById(idx, registeredAssets);
             }
-        });
+
+            // If no asset is selected yet, hide model selection
+            if (!assetSelect.value) {
+                if (modelSelectionGroup) {
+                    modelSelectionGroup.classList.add('hidden');
+                }
+                if (modelSelect) {
+                    modelSelect.removeAttribute('required');
+                }
+            }
+        }
     }
 
     // Build a human-readable label for an asset
@@ -1281,8 +1358,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 serialNumber.classList.remove('readonly-input');
                 purchaseDate.classList.remove('readonly-input');
 
-                serialNumber.setAttribute('required', 'required');
-                purchaseDate.setAttribute('required', 'required');
+                serialNumber.removeAttribute('required');
+                purchaseDate.removeAttribute('required');
 
                 // Clear any existing asset summary badge when selecting Other
                 const badge = document.getElementById('assetSummary_' + index);
@@ -1589,6 +1666,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 modelDropdownWrapper.classList.add('hidden');
             }
         });
+
+        // Initial card layout configuration based on assets state
+        updateCardAssetMode(index);
     }
 
     // --- reCAPTCHA Interactivity ---
@@ -1769,10 +1849,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 if (purchaseDateEl) {
                     const purVal = purchaseDateEl.value;
-                    if (!purVal) {
-                        showFieldError(purchaseDateEl.id, 'Purchase Date is required.');
-                        if (!firstDateInvalidField) firstDateInvalidField = purchaseDateEl;
-                    } else if (purVal > todayStr) {
+                    if (purVal && purVal > todayStr) {
                         showFieldError(purchaseDateEl.id, 'Purchase Date cannot be a future date.');
                         if (!firstDateInvalidField) firstDateInvalidField = purchaseDateEl;
                     } else {
@@ -2125,7 +2202,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             <div class="form-grid">
                 <!-- Asset Selection -->
-                <div class="form-group">
+                <div class="form-group" id="assetNumberGroup_${index}">
                     <label for="assetNumber_${index}">Select Asset <span class="required-asterisk">*</span></label>
                     <select id="assetNumber_${index}" name="assetNumber_${index}" required class="asset-number-select">
                         <option value="">Select an Asset...</option>
@@ -2168,13 +2245,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
 
                 <div class="form-group" id="serialNumberGroup_${index}">
-                    <label for="serialNumber_${index}">Serial Number <span class="required-asterisk">*</span></label>
-                    <input type="text" id="serialNumber_${index}" name="serialNumber_${index}" placeholder="Enter Serial Number">
+                    <label for="serialNumber_${index}">Serial Number</label>
+                    <input type="text" id="serialNumber_${index}" name="serialNumber_${index}" placeholder="Enter Serial Number (Optional)">
                     <span class="error-message" id="serialNumber_${index}-error"></span>
                 </div>
 
                 <div class="form-group" id="purchaseDateGroup_${index}">
-                    <label for="purchaseDate_${index}">Purchase Date <span class="required-asterisk">*</span></label>
+                    <label for="purchaseDate_${index}">Purchase Date</label>
                     <input type="date" id="purchaseDate_${index}" name="purchaseDate_${index}">
                     <span class="error-message" id="purchaseDate_${index}-error"></span>
                 </div>

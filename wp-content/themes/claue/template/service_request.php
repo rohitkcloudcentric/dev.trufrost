@@ -120,23 +120,26 @@ get_header();
                     <!-- Rest of the form fields (Hidden until OTP/GST verification) -->
                     <div id="restOfCustomerInfo" class="hidden form-grid">
 
-                        <!-- Mobile Number Display (After OTP Verification) -->
-                        <div id="mobileNumberDisplaySection" class="hidden">
-                            <div class="form-group">
-                                <label for="mobileNumberReadonly">Mobile Number <span class="required-asterisk">*</span></label>
-                                <input type="tel" id="mobileNumberReadonly" name="mobileNumberReadonly" readonly class="readonly-input" placeholder="Mobile Number" maxlength="10">
-                                <span class="error-message" id="mobileNumberReadonly-error"></span>
+                        <!-- Mobile, Alternate Mobile & Email (Same Row) -->
+                        <div class="form-grid-3 full-width">
+                            <!-- Mobile Number Display (After OTP Verification) -->
+                            <div id="mobileNumberDisplaySection" class="hidden">
+                                <div class="form-group">
+                                    <label for="mobileNumberReadonly">Mobile Number <span class="required-asterisk">*</span></label>
+                                    <input type="tel" id="mobileNumberReadonly" name="mobileNumberReadonly" readonly class="readonly-input" placeholder="Mobile Number" maxlength="10">
+                                    <span class="error-message" id="mobileNumberReadonly-error"></span>
+                                </div>
                             </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="alternateMobile">Alternate Mobile Number</label>
-                            <input type="tel" id="alternateMobile" name="alternateMobile" placeholder="Alternate Mobile Number" maxlength="10">
-                            <span class="error-message" id="alternateMobile-error"></span>
-                        </div>
-                        <div class="form-group">
-                            <label for="email">Email <span class="required-asterisk">*</span></label>
-                            <input type="email" id="email" name="email" required placeholder="Email Address">
-                            <span class="error-message" id="email-error"></span>
+                            <div class="form-group">
+                                <label for="alternateMobile">Alternate Mobile Number</label>
+                                <input type="tel" id="alternateMobile" name="alternateMobile" placeholder="Alternate Mobile Number" maxlength="10">
+                                <span class="error-message" id="alternateMobile-error"></span>
+                            </div>
+                            <div class="form-group">
+                                <label for="email">Email <span class="required-asterisk">*</span></label>
+                                <input type="email" id="email" name="email" required placeholder="Email Address">
+                                <span class="error-message" id="email-error"></span>
+                            </div>
                         </div>
 
                         <div class="form-group">

@@ -196,9 +196,20 @@
     gap: 18px 20px;
 }
 
+.form-grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px 20px;
+}
+
+@media (min-width: 768px) {
+    .form-grid-3:has(#mobileNumberDisplaySection.hidden) {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
 .form-group { position: relative; margin-bottom: 0; }
 .full-width,
-#mobileNumberDisplaySection,
 #addressSelectGroup,
 #newAddressFields { grid-column: 1 / -1; }
 
@@ -632,6 +643,7 @@ textarea.is-invalid {
     .step-icon { width: 28px; height: 28px; }
     .form-section { padding: 20px 16px; }
     .form-grid,
+    .form-grid-3,
     .address-grid { grid-template-columns: 1fr; }
     .input-group,
     .input-group-equal { flex-direction: column; }
