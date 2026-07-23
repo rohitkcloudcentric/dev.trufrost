@@ -23,7 +23,7 @@ get_header();
         <div class="container service-shell">
 
             <div class="form-header">
-                <div class="header-kicker"> Trufrost Service CRM</div>
+                <!-- <div class="header-kicker"> Trufrost Service CRM</div> -->
                 <div class="header-title d-flex flex-wrap align-items-center justify-content-between gap-3">
                     <div>
                         <h1>Raise a Service Request</h1>
@@ -31,7 +31,7 @@ get_header();
                     </div>
                     <!-- <span class="response-badge"><i class="bi bi-lightning-charge-fill"></i> Priority routing enabled</span> -->
                 </div>
-                <span class="mandatory-note">* Marked fields are mandatory</span>
+                <span class="mandatory-note">* Marked fields are mandatory. keep GST details/PAN card details before registering ticket.</span>
             </div>
 
 
@@ -63,7 +63,7 @@ get_header();
 
                 <!-- Section 1: Customer Information -->
                 <section class="form-section">
-                    <h3 id="sectionTitle">Please enter your mobile number for verification</h3>
+                    <h3 id="sectionTitle">Please enter your whatsapp number. An OTP will be sent on your whatsapp number.</h3>
 
                     <!-- OTP Verification Container (Initially Hidden) -->
                     <div id="otpVerificationContainer" class="otp-verification-container hidden">
@@ -95,6 +95,7 @@ get_header();
                     <!-- GST/PAN Search Section (Scenario 2 & Inactive Contact) -->
                     <div id="gstPanSearchSection" class="hidden gst-pan-search-wrapper">
 
+
                         <!-- Inactive Contact Notice Banner (shown only when contact is inactive) -->
                         <div id="inactiveContactNotice" class="inactive-notice hidden">
                             <span class="inactive-notice__icon"><i class="bi bi-exclamation-circle-fill"></i></span>
@@ -121,11 +122,21 @@ get_header();
 
                         <!-- Mobile Number Display (After OTP Verification) -->
                         <div id="mobileNumberDisplaySection" class="hidden">
-                            <div class="form-group full-width">
+                            <div class="form-group">
                                 <label for="mobileNumberReadonly">Mobile Number <span class="required-asterisk">*</span></label>
                                 <input type="tel" id="mobileNumberReadonly" name="mobileNumberReadonly" readonly class="readonly-input" placeholder="Mobile Number" maxlength="10">
                                 <span class="error-message" id="mobileNumberReadonly-error"></span>
                             </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="alternateMobile">Alternate Mobile Number</label>
+                            <input type="tel" id="alternateMobile" name="alternateMobile" placeholder="Alternate Mobile Number" maxlength="10">
+                            <span class="error-message" id="alternateMobile-error"></span>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email <span class="required-asterisk">*</span></label>
+                            <input type="email" id="email" name="email" required placeholder="Email Address">
+                            <span class="error-message" id="email-error"></span>
                         </div>
 
                         <div class="form-group">
@@ -134,17 +145,9 @@ get_header();
                             <span class="error-message" id="name-error"></span>
                         </div>
 
-                        <div class="form-group">
-                            <label for="email">Email <span class="required-asterisk">*</span></label>
-                            <input type="email" id="email" name="email" required placeholder="Email Address">
-                            <span class="error-message" id="email-error"></span>
-                        </div>
 
-                        <div class="form-group">
-                            <label for="alternateMobile">Alternate Mobile Number</label>
-                            <input type="tel" id="alternateMobile" name="alternateMobile" placeholder="Alternate Mobile Number" maxlength="10">
-                            <span class="error-message" id="alternateMobile-error"></span>
-                        </div>
+
+
 
                         <!-- Company/Business Name -->
                         <div class="form-group" id="companyNameGroup">
@@ -152,29 +155,32 @@ get_header();
                             <input type="text" id="companyName" name="companyName" required placeholder="Business Name">
                             <span class="error-message" id="companyName-error"></span>
                         </div>
+                        <div id="gstPanNote" class="form-group full-width hidden gst-pan-note-container">
+                            <span class="gst-pan-note"><i class="bi bi-info-circle-fill"></i> Please provide either your GSTIN or PAN number. You only need to fill in one of these fields.</span>
+                        </div>
 
                         <!-- Readonly GSTIN & PAN Displays -->
                         <div class="form-group hidden" id="gstinDisplaySection">
-                            <label for="gstinReadonly">GSTIN</label>
+                            <label for="gstinReadonly">GSTIN (e.g., 22AAAAA0000A1Z5)</label>
                             <input type="text" id="gstinReadonly" name="gstinReadonly" readonly class="readonly-input" placeholder="GSTIN (15 characters)" maxlength="15">
                             <span class="error-message" id="gstinReadonly-error"></span>
                         </div>
 
                         <div class="form-group hidden" id="panDisplaySection">
-                            <label for="panReadonly">PAN</label>
+                            <label for="panReadonly">PAN (e.g.,ABCDE1234F) </label>
                             <input type="text" id="panReadonly" name="panReadonly" readonly class="readonly-input" placeholder="PAN (10 characters)" maxlength="10">
                             <span class="error-message" id="panReadonly-error"></span>
                         </div>
 
                         <!-- GSTIN & PAN inputs (For Scenario 2B registration) -->
                         <div class="form-group hidden" id="gstinInputSection">
-                            <label for="gstinInput">GSTIN <span class="required-asterisk">*</span></label>
+                            <label for="gstinInput">GSTIN <span class="required-asterisk">*</span> <span class="field-format-hint">(e.g., 22AAAAA0000A1Z5)</span></label>
                             <input type="text" id="gstinInput" name="gstinInput" placeholder="Enter GSTIN (15 characters)" maxlength="15">
                             <span class="error-message" id="gstinInput-error"></span>
                         </div>
 
                         <div class="form-group hidden" id="panInputSection">
-                            <label for="panInput">PAN <span class="required-asterisk">*</span></label>
+                            <label for="panInput">PAN <span class="required-asterisk">*</span> <span class="field-format-hint">(e.g., ABCDE1234F)</span></label>
                             <input type="text" id="panInput" name="panInput" placeholder="Enter PAN (10 characters)" maxlength="10">
                             <span class="error-message" id="panInput-error"></span>
                         </div>
@@ -262,7 +268,7 @@ get_header();
             <!-- Success Message Container -->
             <div id="successMessage" class="success-message hidden">
                 <div class="success-icon"><i class="bi bi-check-circle-fill"></i></div>
-                <h2>Thank you, Your Services Request number <strong id="ticketIdDisplay">T&B0000000</strong> has been registered and is currently being processed.</h2>
+                <p>Thank you, Your Services Request number <strong id="ticketIdDisplay">T&B0000000</strong> has been registered and is currently being processed.</p>
                 <!-- <p>If your mobile number has active WhatsApp, you will shortly receive a message from us with Service
                     call details.</p> -->
                 <!-- <div class="ticket-info">
@@ -271,7 +277,7 @@ get_header();
                 </div> -->
 
                 <!-- Service Request Details -->
-                <div id="serviceRequestDetails" class="service-request-details" style="display: none; margin-top: 30px; text-align: left; background: #f9f9f9; padding: 20px; border-radius: 8px;">
+                <!-- <div id="serviceRequestDetails" class="service-request-details" style="display: none; margin-top: 30px; text-align: left; background: #f9f9f9; padding: 20px; border-radius: 8px;">
                     <h3 style="margin-bottom: 15px; color: #333;">Service Request Details</h3>
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
                         <div>
@@ -299,9 +305,9 @@ get_header();
                             <p id="detailStatus" style="margin: 5px 0;">-</p>
                         </div>
                     </div>
-                </div>
+                </div> -->
 
-                <p class="contact-info">For more information, call us on our toll-free number.</p>
+                <p class="contact-info"></p>
                 <button class="btn btn-secondary" id="raiseAnotherBtn"><i class="bi bi-arrow-repeat"></i> Raise Another Request</button>
             </div>
 

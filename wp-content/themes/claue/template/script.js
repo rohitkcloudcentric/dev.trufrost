@@ -38,6 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const gstinPanAttachmentGroup = document.getElementById('gstinPanAttachmentGroup');
     const gstinPanAttachment = document.getElementById('gstinPanAttachment');
     const gstinPanAttachmentDisplay = document.getElementById('gstinPanAttachmentDisplay');
+    const gstPanNote = document.getElementById('gstPanNote');
 
     // Address Elements
     const addressSelectGroup = document.getElementById('addressSelectGroup');
@@ -692,6 +693,19 @@ document.addEventListener('DOMContentLoaded', () => {
         // Show Customer Info fields
         restOfCustomerInfo.classList.remove('hidden');
 
+        // Show/hide Scenario 2B elements based on activeScenario
+        if (activeScenario === 'Scenario_2B') {
+            gstinInputSection.classList.remove('hidden');
+            panInputSection.classList.remove('hidden');
+            gstinPanAttachmentGroup.classList.remove('hidden');
+            if (gstPanNote) gstPanNote.classList.remove('hidden');
+        } else {
+            gstinInputSection.classList.add('hidden');
+            panInputSection.classList.add('hidden');
+            gstinPanAttachmentGroup.classList.add('hidden');
+            if (gstPanNote) gstPanNote.classList.add('hidden');
+        }
+
         // Initialize dynamic product items container (Clear and add initial card)
         productRequestsContainer.innerHTML = '';
         productCards = [];
@@ -880,7 +894,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         clearFieldError('gstinOrPanInput');
         showLoader(gstinOrPanSearchBtn, 'Searching...');
-        showGlobalLoader('Searching business details in Salesforce...');
+        showGlobalLoader('Searching business details...');
         searchGstPanVal = gstPanVal;
 
         try {
@@ -1407,7 +1421,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // 5. Warranty Selection Change handler
         warrantySelect.addEventListener('change', () => {
             const val = warrantySelect.value;
-            if (val === 'Standard Warranty' || val === 'Out of warranty') {
+            if (val === 'Standard Warranty' || val === 'Under AMC' || val === 'Extended Warranty') {
                 invoiceGroup.classList.remove('hidden');
                 invoiceCopy.setAttribute('required', 'required');
             } else {
@@ -1989,68 +2003,80 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Show summary details of the created request(s)
                 const detailsContainer = document.getElementById('serviceRequestDetails');
                 
-                if (productCards.length > 1) {
-                    let rowsHtml = '';
-                    productCards.forEach((idx, i) => {
-                        const svcCatEl = document.getElementById('serviceCategory_' + idx);
-                        const purpose = svcCatEl ? svcCatEl.options[svcCatEl.selectedIndex].text : '';
-                        const modelEl = document.getElementById('modelNumber_' + idx);
-                        const model = (document.getElementById('productName_' + idx) || {}).value || (modelEl ? modelEl.options[modelEl.selectedIndex].text : '');
-                        const serial = (document.getElementById('serialNumber_' + idx) || {}).value || '-';
-                        const warrantySelectEl = document.getElementById('warrantyStatus_' + idx);
-                        const warranty = warrantySelectEl ? warrantySelectEl.options[warrantySelectEl.selectedIndex].text : '';
-                        
-                        // Map the ticket number from the response childCases array if available
-                        const childCase = (submitResult.childCases && submitResult.childCases[i]) ? submitResult.childCases[i] : null;
-                        const ticketNo = childCase ? (childCase.ticketNumber || childCase.childSRId) : (submitResult.parentSRId || 'Pending');
+                if (detailsContainer) {
+                    if (productCards.length > 1) {
+                        let rowsHtml = '';
+                        productCards.forEach((idx, i) => {
+                            const svcCatEl = document.getElementById('serviceCategory_' + idx);
+                            const purpose = svcCatEl ? svcCatEl.options[svcCatEl.selectedIndex].text : '';
+                            const modelEl = document.getElementById('modelNumber_' + idx);
+                            const model = (document.getElementById('productName_' + idx) || {}).value || (modelEl ? modelEl.options[modelEl.selectedIndex].text : '');
+                            const serial = (document.getElementById('serialNumber_' + idx) || {}).value || '-';
+                            const warrantySelectEl = document.getElementById('warrantyStatus_' + idx);
+                            const warranty = warrantySelectEl ? warrantySelectEl.options[warrantySelectEl.selectedIndex].text : '';
+                            
+                            // Map the ticket number from the response childCases array if available
+                            const childCase = (submitResult.childCases && submitResult.childCases[i]) ? submitResult.childCases[i] : null;
+                            const ticketNo = childCase ? (childCase.ticketNumber || childCase.childSRId) : (submitResult.parentSRId || 'Pending');
 
-                        rowsHtml += `
-                            <tr style="border-bottom: 1px solid #dee2e6;">
-                                <td style="padding: 12px 10px; font-weight: bold; color: #0056b3;">${ticketNo}</td>
-                                <td style="padding: 12px 10px;">${model}</td>
-                                <td style="padding: 12px 10px;">${serial}</td>
-                                <td style="padding: 12px 10px;">${purpose}</td>
-                                <td style="padding: 12px 10px;">${warranty}</td>
-                            </tr>
+                            rowsHtml += `
+                                <tr style="border-bottom: 1px solid #dee2e6;">
+                                    <td style="padding: 12px 10px; font-weight: bold; color: #0056b3;">${ticketNo}</td>
+                                    <td style="padding: 12px 10px;">${model}</td>
+                                    <td style="padding: 12px 10px;">${serial}</td>
+                                    <td style="padding: 12px 10px;">${purpose}</td>
+                                    <td style="padding: 12px 10px;">${warranty}</td>
+                                </tr>
+                            `;
+                        });
+
+                        detailsContainer.innerHTML = `
+                            <h3 style="margin-bottom: 15px; color: #333; font-weight: 600;">Service Request Summary</h3>
+                            <p style="margin-bottom: 15px;"><strong>Registered Mobile:</strong> ${mobileNumber.value}</p>
+                            <div style="overflow-x: auto;">
+                                <table style="width: 100%; border-collapse: collapse; background: #fff; border-radius: 6px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                                    <thead>
+                                        <tr style="background: #e9ecef; border-bottom: 2px solid #dee2e6; text-align: left;">
+                                            <th style="padding: 12px 10px; font-weight: 600;">Ticket Number</th>
+                                            <th style="padding: 12px 10px; font-weight: 600;">Model/Product</th>
+                                            <th style="padding: 12px 10px; font-weight: 600;">Serial Number</th>
+                                            <th style="padding: 12px 10px; font-weight: 600;">Category</th>
+                                            <th style="padding: 12px 10px; font-weight: 600;">Warranty Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        ${rowsHtml}
+                                    </tbody>
+                                </table>
+                            </div>
                         `;
-                    });
+                    } else {
+                        // For single product requests, use the default structure
+                        const firstIdx = productCards[0];
+                        const detailMobileNumber = document.getElementById('detailMobileNumber');
+                        if (detailMobileNumber) detailMobileNumber.textContent = mobileNumber.value;
+                        
+                        const svcCatEl = document.getElementById('serviceCategory_' + firstIdx);
+                        const detailPurpose = document.getElementById('detailPurpose');
+                        if (detailPurpose) detailPurpose.textContent = svcCatEl ? svcCatEl.options[svcCatEl.selectedIndex].text : '';
+                        
+                        const modelEl = document.getElementById('modelNumber_' + firstIdx);
+                        const detailModel = document.getElementById('detailModel');
+                        if (detailModel) detailModel.textContent = (document.getElementById('productName_' + firstIdx) || {}).value || (modelEl ? modelEl.options[modelEl.selectedIndex].text : '');
+                        
+                        const detailSerial = document.getElementById('detailSerial');
+                        if (detailSerial) detailSerial.textContent = (document.getElementById('serialNumber_' + firstIdx) || {}).value || '';
 
-                    detailsContainer.innerHTML = `
-                        <h3 style="margin-bottom: 15px; color: #333; font-weight: 600;">Service Request Summary</h3>
-                        <p style="margin-bottom: 15px;"><strong>Registered Mobile:</strong> ${mobileNumber.value}</p>
-                        <div style="overflow-x: auto;">
-                            <table style="width: 100%; border-collapse: collapse; background: #fff; border-radius: 6px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-                                <thead>
-                                    <tr style="background: #e9ecef; border-bottom: 2px solid #dee2e6; text-align: left;">
-                                        <th style="padding: 12px 10px; font-weight: 600;">Ticket Number</th>
-                                        <th style="padding: 12px 10px; font-weight: 600;">Model/Product</th>
-                                        <th style="padding: 12px 10px; font-weight: 600;">Serial Number</th>
-                                        <th style="padding: 12px 10px; font-weight: 600;">Category</th>
-                                        <th style="padding: 12px 10px; font-weight: 600;">Warranty Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    ${rowsHtml}
-                                </tbody>
-                            </table>
-                        </div>
-                    `;
-                } else {
-                    // For single product requests, use the default structure
-                    const firstIdx = productCards[0];
-                    document.getElementById('detailMobileNumber').textContent = mobileNumber.value;
-                    const svcCatEl = document.getElementById('serviceCategory_' + firstIdx);
-                    document.getElementById('detailPurpose').textContent = svcCatEl ? svcCatEl.options[svcCatEl.selectedIndex].text : '';
-                    const modelEl = document.getElementById('modelNumber_' + firstIdx);
-                    document.getElementById('detailModel').textContent = (document.getElementById('productName_' + firstIdx) || {}).value || (modelEl ? modelEl.options[modelEl.selectedIndex].text : '');
-                    document.getElementById('detailSerial').textContent = (document.getElementById('serialNumber_' + firstIdx) || {}).value || '';
+                        const warrantySelectEl = document.getElementById('warrantyStatus_' + firstIdx);
+                        const detailWarranty = document.getElementById('detailWarranty');
+                        if (detailWarranty) detailWarranty.textContent = warrantySelectEl ? warrantySelectEl.options[warrantySelectEl.selectedIndex].text : '';
+                        
+                        const detailStatus = document.getElementById('detailStatus');
+                        if (detailStatus) detailStatus.textContent = submitResult.status || 'Success';
+                    }
 
-                    const warrantySelectEl = document.getElementById('warrantyStatus_' + firstIdx);
-                    document.getElementById('detailWarranty').textContent = warrantySelectEl ? warrantySelectEl.options[warrantySelectEl.selectedIndex].text : '';
-                    document.getElementById('detailStatus').textContent = submitResult.status || 'Success';
+                    detailsContainer.style.display = 'block';
                 }
-
-                detailsContainer.style.display = 'block';
                 successMessage.classList.remove('hidden');
                 updateProgress('submit');
                 showToast('Your service request was submitted successfully.', 'success');
