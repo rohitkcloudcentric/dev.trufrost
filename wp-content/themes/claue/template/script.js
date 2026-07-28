@@ -1883,7 +1883,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const submitBtn = document.getElementById('submitBtn');
         showLoader(submitBtn, 'Submitting...');
-        showGlobalLoader('Submitting service request to Salesforce...');
+        showGlobalLoader('Your service request is being generated...');
 
         try {
             // Capture Alternate Mobile once for the payload
@@ -2001,18 +2001,36 @@ document.addEventListener('DOMContentLoaded', () => {
             // Build assets array for all active product cards
             const assets = productCards.map((idx) => {
                 const assetItem = {};
-                const assetSelectVal = document.getElementById('assetNumber_' + idx).value;
+                const assetSelectEl = document.getElementById('assetNumber_' + idx);
+                const assetSelectVal = assetSelectEl ? assetSelectEl.value : '';
+
                 if (assetSelectVal && assetSelectVal !== 'other') {
                     assetItem.assetId = assetSelectVal;
                 } else {
-                    // Use raw product name (without category prefix) for Salesforce payload
                     const productNameEl = document.getElementById('productName_' + idx);
-                    assetItem.assetName = (productNameEl.dataset.rawName || productNameEl.value).trim();
-                    assetItem.product2Id = document.getElementById('modelNumber_' + idx).value;
-                    assetItem.purchaseDate = document.getElementById('purchaseDate_' + idx).value;
-                    assetItem.warrantyType = mapWarrantyTypeToSalesforce(document.getElementById('warrantyStatus_' + idx).value);
-                    assetItem.serialNumber = document.getElementById('serialNumber_' + idx).value.trim();
+                    if (productNameEl) {
+                        const rawName = (productNameEl.dataset.rawName || productNameEl.value || '').trim();
+                        if (rawName) assetItem.assetName = rawName;
+                    }
+
+                    const modelEl = document.getElementById('modelNumber_' + idx);
+                    if (modelEl && modelEl.value) assetItem.product2Id = modelEl.value;
+
+                    const purchaseEl = document.getElementById('purchaseDate_' + idx);
+                    if (purchaseEl && purchaseEl.value) assetItem.purchaseDate = purchaseEl.value;
+
+                    const warrantyEl = document.getElementById('warrantyStatus_' + idx);
+                    if (warrantyEl && warrantyEl.value) {
+                        assetItem.warrantyType = mapWarrantyTypeToSalesforce(warrantyEl.value);
+                    }
+
+                    const serialEl = document.getElementById('serialNumber_' + idx);
+                    if (serialEl && serialEl.value && serialEl.value.trim()) {
+                        assetItem.serialNumber = serialEl.value.trim();
+                    }
+
                     assetItem.price = 0;
+
                     const instDateInput = document.getElementById('installationDate_' + idx);
                     if (instDateInput && instDateInput.value) {
                         assetItem.InstallDates = instDateInput.value;
@@ -2022,17 +2040,27 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
 
                 // Service Request details for this card
-                assetItem.purpose = document.getElementById('serviceCategory_' + idx).value;
+                const svcCategoryEl = document.getElementById('serviceCategory_' + idx);
+                if (svcCategoryEl && svcCategoryEl.value) {
+                    assetItem.purpose = svcCategoryEl.value;
+                }
                 assetItem.priority = 'Normal';
-                assetItem.callType = document.getElementById('warrantyStatus_' + idx).value;
+
+                const warrantyStatusEl = document.getElementById('warrantyStatus_' + idx);
+                if (warrantyStatusEl && warrantyStatusEl.value) {
+                    assetItem.callType = warrantyStatusEl.value;
+                }
                 assetItem.Source = 'Web';
 
-                const issueDesc = document.getElementById('issueDescription_' + idx).value;
-                if (issueDesc && issueDesc.trim() !== '') {
-                    assetItem.description = issueDesc.trim();
+                const issueDescEl = document.getElementById('issueDescription_' + idx);
+                if (issueDescEl && issueDescEl.value && issueDescEl.value.trim() !== '') {
+                    assetItem.description = issueDescEl.value.trim();
                 }
 
                 return assetItem;
+            }).filter(item => {
+                // Keep item if it contains an asset identifier or service details
+                return item.assetId || item.product2Id || item.assetName || item.serialNumber || item.purpose || item.description;
             });
 
             formData.assets = assets;

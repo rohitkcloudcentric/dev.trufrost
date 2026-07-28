@@ -1105,6 +1105,103 @@ function searchGSTPAN($gstinOrPan, $accessToken)
 }
 
 /**
+ * Helper to extract duplicate record ID from Salesforce DUPLICATES_DETECTED error response
+ */
+function extractDuplicateIdFromSalesforceError($result)
+{
+    if (!is_array($result)) return null;
+    foreach ($result as $err) {
+        if (isset($err['errorCode']) && $err['errorCode'] === 'DUPLICATES_DETECTED') {
+            $matchResults = $err['duplicateResult']['matchResults'] ?? [];
+            foreach ($matchResults as $matchResult) {
+                $matchRecords = $matchResult['matchRecords'] ?? [];
+                foreach ($matchRecords as $recordItem) {
+                    $id = $recordItem['record']['Id'] ?? $recordItem['record']['id'] ?? null;
+                    if ($id) return $id;
+                }
+            }
+        }
+    }
+    return null;
+}
+
+/**
+ * Query Salesforce via SOQL to find an existing Contact by Phone, MobilePhone, or Email
+ */
+function findSalesforceContactByPhoneOrEmail($phone, $email, $accessToken, $accountId = null)
+{
+    $conditions = [];
+    if (!empty($phone)) {
+        $cleanPhone = preg_replace('/[^0-9]/', '', $phone);
+        if (!empty($cleanPhone)) {
+            $conditions[] = "Phone = '{$cleanPhone}'";
+            $conditions[] = "MobilePhone = '{$cleanPhone}'";
+        }
+    }
+    if (!empty($email) && filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $conditions[] = "Email = '{$email}'";
+    }
+
+    if (empty($conditions)) {
+        return null;
+    }
+
+    $whereClause = implode(' OR ', $conditions);
+
+    // Try query with AccountId first if provided
+    if (!empty($accountId)) {
+        $query = "SELECT Id FROM Contact WHERE AccountId = '{$accountId}' AND ({$whereClause}) LIMIT 1";
+        $url = SF_API_URL . '/services/data/v58.0/query/?q=' . urlencode($query);
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Authorization: Bearer ' . $accessToken
+        ]);
+
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        if ($httpCode === 200 && !empty($response)) {
+            $data = json_decode($response, true);
+            if (!empty($data['records'][0]['Id'])) {
+                error_log('✓ Found existing Contact via SOQL Query (by Account). ID: ' . $data['records'][0]['Id']);
+                return $data['records'][0]['Id'];
+            }
+        }
+    }
+
+    // Global query across all contacts
+    $queryGlobal = "SELECT Id FROM Contact WHERE {$whereClause} LIMIT 1";
+    $urlGlobal = SF_API_URL . '/services/data/v58.0/query/?q=' . urlencode($queryGlobal);
+
+    $ch2 = curl_init();
+    curl_setopt($ch2, CURLOPT_URL, $urlGlobal);
+    curl_setopt($ch2, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch2, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch2, CURLOPT_HTTPHEADER, [
+        'Authorization: Bearer ' . $accessToken
+    ]);
+
+    $response2 = curl_exec($ch2);
+    $httpCode2 = curl_getinfo($ch2, CURLINFO_HTTP_CODE);
+    curl_close($ch2);
+
+    if ($httpCode2 === 200 && !empty($response2)) {
+        $data2 = json_decode($response2, true);
+        if (!empty($data2['records'][0]['Id'])) {
+            error_log('✓ Found existing Contact via SOQL Query (Global). ID: ' . $data2['records'][0]['Id']);
+            return $data2['records'][0]['Id'];
+        }
+    }
+
+    return null;
+}
+
+/**
  * Create Account in Salesforce
  */
 function createSalesforceAccount($name, $phone, $gstin, $pan, $street, $city, $state, $country, $postalCode, $accessToken)
@@ -1165,12 +1262,10 @@ function createSalesforceAccount($name, $phone, $gstin, $pan, $street, $city, $s
 
     if ($httpCode === 400 && !empty($response)) {
         $result = json_decode($response, true);
-        if (is_array($result) && isset($result[0]['errorCode']) && $result[0]['errorCode'] === 'DUPLICATES_DETECTED') {
-            $duplicateId = $result[0]['duplicateResult']['matchResults'][0]['matchRecords'][0]['record']['Id'] ?? null;
-            if ($duplicateId) {
-                error_log('⚠ Duplicate Account Detected. Reusing existing Account ID: ' . $duplicateId);
-                return $duplicateId;
-            }
+        $duplicateId = extractDuplicateIdFromSalesforceError($result);
+        if ($duplicateId) {
+            error_log('⚠ Duplicate Account Detected. Reusing existing Account ID: ' . $duplicateId);
+            return $duplicateId;
         }
     }
 
@@ -1248,13 +1343,18 @@ function createSalesforceContact($accountId, $firstName, $lastName, $phone, $ema
 
     if ($httpCode === 400 && !empty($response)) {
         $result = json_decode($response, true);
-        if (is_array($result) && isset($result[0]['errorCode']) && $result[0]['errorCode'] === 'DUPLICATES_DETECTED') {
-            $duplicateId = $result[0]['duplicateResult']['matchResults'][0]['matchRecords'][0]['record']['Id'] ?? null;
-            if ($duplicateId) {
-                error_log('⚠ Duplicate Contact Detected. Reusing existing Contact ID: ' . $duplicateId);
-                return $duplicateId;
-            }
+        $duplicateId = extractDuplicateIdFromSalesforceError($result);
+        if ($duplicateId) {
+            error_log('⚠ Duplicate Contact Detected. Reusing existing Contact ID: ' . $duplicateId);
+            return $duplicateId;
         }
+    }
+
+    // SOQL Fallback lookup if creation failed or duplicate record was not directly extracted
+    $fallbackContactId = findSalesforceContactByPhoneOrEmail($phone, $email, $accessToken, $accountId);
+    if ($fallbackContactId) {
+        error_log('⚠ Existing Contact found via SOQL Fallback: ' . $fallbackContactId);
+        return $fallbackContactId;
     }
 
     error_log('✗ Contact Creation Failed in Salesforce');
@@ -1643,6 +1743,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
             }
 
+            // Ensure Contact ID is set if already existing in Salesforce
+            if (empty($formData['contactId'])) {
+                $existingContactId = findSalesforceContactByPhoneOrEmail($customerMobile, $customerEmail, $accessToken, $formData['accountId'] ?? null);
+                if ($existingContactId) {
+                    $formData['contactId'] = $existingContactId;
+                    error_log("Found existing Contact ID via SOQL search: " . $existingContactId);
+                }
+            }
+
             // Create Account and Contact programmatically in Salesforce if not exists
             if (empty($formData['accountId'])) {
                 // Scenario 2B: Neither Account nor Contact exists in Salesforce.
@@ -1675,22 +1784,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $formData['accountId'] = $newAccountId;
                     error_log("Successfully created Account ID: " . $newAccountId);
 
-                    // Now create the Contact linked to this new Account
-                    $firstName = $formData['firstName'] ?? '';
-                    $lastName = $formData['lastName'] ?? '';
-                    $contactPhone = $formData['contactPhone'] ?? $customerMobile;
-                    $contactEmail = $formData['contactEmail'] ?? $customerEmail;
+                    // Now create the Contact linked to this new Account if not present
+                    if (empty($formData['contactId'])) {
+                        $firstName = $formData['firstName'] ?? '';
+                        $lastName = $formData['lastName'] ?? '';
+                        $contactPhone = $formData['contactPhone'] ?? $customerMobile;
+                        $contactEmail = $formData['contactEmail'] ?? $customerEmail;
 
-                    error_log("Creating Contact in Salesforce linked to new Account ID: " . $newAccountId);
-                    $newContactId = createSalesforceContact($newAccountId, $firstName, $lastName, $contactPhone, $contactEmail, $alternateMobile, $accessToken);
-                    if ($newContactId) {
-                        $formData['contactId'] = $newContactId;
-                        error_log("Successfully linked new Contact ID: " . $newContactId);
+                        error_log("Creating Contact in Salesforce linked to new Account ID: " . $newAccountId);
+                        $newContactId = createSalesforceContact($newAccountId, $firstName, $lastName, $contactPhone, $contactEmail, $alternateMobile, $accessToken);
+                        if (!$newContactId) {
+                            $newContactId = findSalesforceContactByPhoneOrEmail($contactPhone, $contactEmail, $accessToken, $newAccountId);
+                        }
+                        if ($newContactId) {
+                            $formData['contactId'] = $newContactId;
+                            error_log("Successfully linked new Contact ID: " . $newContactId);
+                        }
                     }
                 }
             } else if (empty($formData['contactId'])) {
-                // Scenario 2A: Account exists, but Contact does not exist.
-                // Create the Contact linked to the existing Account.
+                // Scenario 2A: Account exists, but Contact does not exist or wasn't passed.
                 $firstName = $formData['firstName'] ?? '';
                 $lastName = $formData['lastName'] ?? '';
                 $contactPhone = $formData['contactPhone'] ?? $customerMobile;
@@ -1698,9 +1811,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 error_log("Creating Contact in Salesforce linked to existing Account ID: " . $formData['accountId']);
                 $newContactId = createSalesforceContact($formData['accountId'], $firstName, $lastName, $contactPhone, $contactEmail, $alternateMobile, $accessToken);
+                if (!$newContactId) {
+                    $newContactId = findSalesforceContactByPhoneOrEmail($contactPhone, $contactEmail, $accessToken, $formData['accountId']);
+                }
                 if ($newContactId) {
                     $formData['contactId'] = $newContactId;
                     error_log("Successfully linked new Contact ID: " . $newContactId);
+                }
+            }
+
+            // Final fallback check for contactId
+            if (empty($formData['contactId'])) {
+                $finalContactId = findSalesforceContactByPhoneOrEmail($customerMobile, $customerEmail, $accessToken);
+                if ($finalContactId) {
+                    $formData['contactId'] = $finalContactId;
+                    error_log("Final fallback set Contact ID: " . $finalContactId);
                 }
             }
 
@@ -1787,7 +1912,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Prepare Salesforce request payload
             $salesforceData = $formData;
 
-            // Build the asset array item or use the existing pre-built assets array
+            if (!empty($formData['contactId'])) {
+                $salesforceData['contactId'] = $formData['contactId'];
+            }
+
+            // Build and clean the asset array
             $assetFields = [
                 'assetId',
                 'assetName',
@@ -1806,25 +1935,47 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'description'
             ];
 
+            $cleanAssets = [];
             if (isset($formData['assets']) && is_array($formData['assets'])) {
-                // If the frontend already built the assets collection, use it directly
-                $salesforceData['assets'] = $formData['assets'];
-                // Clean up any individual top-level asset fields
-                foreach ($assetFields as $field) {
-                    unset($salesforceData[$field]);
+                foreach ($formData['assets'] as $assetItem) {
+                    if (!is_array($assetItem)) continue;
+                    $itemClean = [];
+                    foreach ($assetItem as $k => $v) {
+                        if ($v !== null && $v !== '') {
+                            $itemClean[$k] = is_string($v) ? trim($v) : $v;
+                        }
+                    }
+                    $hasAssetIdentifier = !empty($itemClean['assetId']) || !empty($itemClean['product2Id']) || !empty($itemClean['assetName']) || !empty($itemClean['serialNumber']);
+                    $hasServiceInfo = !empty($itemClean['purpose']) || !empty($itemClean['description']) || !empty($itemClean['callType']);
+                    if ($hasAssetIdentifier || $hasServiceInfo) {
+                        $cleanAssets[] = $itemClean;
+                    }
                 }
             } else {
-                // Build a single asset array item from top-level fields (for backward compatibility)
                 $assetItem = [];
                 foreach ($assetFields as $field) {
                     if (isset($salesforceData[$field])) {
-                        $assetItem[$field] = $salesforceData[$field];
+                        $val = $salesforceData[$field];
+                        if ($val !== null && $val !== '') {
+                            $assetItem[$field] = is_string($val) ? trim($val) : $val;
+                        }
                         unset($salesforceData[$field]);
                     }
                 }
-                // Nest it inside 'assets' array
-                $salesforceData['assets'] = [$assetItem];
+                $hasAssetIdentifier = !empty($assetItem['assetId']) || !empty($assetItem['product2Id']) || !empty($assetItem['assetName']) || !empty($assetItem['serialNumber']);
+                $hasServiceInfo = !empty($assetItem['purpose']) || !empty($assetItem['description']) || !empty($assetItem['callType']);
+                if ($hasAssetIdentifier || $hasServiceInfo) {
+                    $cleanAssets[] = $assetItem;
+                }
             }
+
+            // Clean up individual top-level asset fields
+            foreach ($assetFields as $field) {
+                unset($salesforceData[$field]);
+            }
+
+            // Assign sanitized assets array (if asset data is blank, sends empty array [])
+            $salesforceData['assets'] = $cleanAssets;
 
             // If contactId is present, remove contact details from the payload to avoid duplicate detection errors in Salesforce Apex REST API
             if (!empty($salesforceData['contactId'])) {
