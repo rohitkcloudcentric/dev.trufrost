@@ -396,27 +396,60 @@ get_header();
             <!-- Toast Messages Region -->
             <div id="statusToastRegion" class="toast-region" aria-live="polite" aria-atomic="true"></div>
 
-            <!-- Search Card section matching form-section style -->
+            <!-- Search & OTP Card Section -->
             <div class="search-box-card" style="background: #ffffff; border: 1px solid var(--tf-border); border-radius: var(--tf-radius); padding: 28px; box-shadow: var(--tf-shadow); margin-bottom: 28px;">
                 <form id="srStatusForm" novalidate>
-                    <h3 style="display: flex; align-items: center; gap: 10px; margin: 0 0 22px; color: var(--tf-ink); font-size: 1.08rem; font-weight: 800;"><span style="width: 4px; height: 22px; background: var(--tf-primary); border-radius: 999px; display: inline-block;"></span>Please enter your registered mobile number to search requests.</h3>
+                    <h3 style="display: flex; align-items: center; gap: 10px; margin: 0 0 22px; color: var(--tf-ink); font-size: 1.08rem; font-weight: 800;">
+                        <span style="width: 4px; height: 22px; background: var(--tf-primary); border-radius: 999px; display: inline-block;"></span>
+                        Please enter your registered WhatsApp mobile number to verify OTP and view request status.
+                    </h3>
 
-                    <div class="form-group verification-field" style="max-width: 740px;">
-                        <label for="srMobileNumber" class="form-label fw-bold mb-2">Mobile Number <span class="required-asterisk">*</span> <i class="bi bi-info-circle help-icon" data-bs-toggle="tooltip" title="Enter registered 10-digit mobile number"></i></label>
-                        <div class="input-group input-group-equal">
-                            <div class="field-with-error">
-                                <input type="tel" id="srMobileNumber" class="form-control" placeholder="Enter 10-digit number" pattern="[0-9]{10}" maxlength="10" required style="min-height: 44px;">
-                                <div id="srMobileError" class="error-message mt-2" style="display:none; color: var(--tf-danger); font-size: 0.85rem; font-weight: 600;"></div>
+                    <div class="row g-3 align-items-start">
+                        <!-- Mobile Number Field -->
+                        <div class="col-12 col-md-6" id="srMobileGroupCol">
+                            <div class="form-group verification-field mb-0">
+                                <label for="srMobileNumber" class="form-label fw-bold mb-2">Mobile Number <span class="required-asterisk">*</span> <i class="bi bi-info-circle help-icon" data-bs-toggle="tooltip" title="Enter registered 10-digit mobile number"></i></label>
+                                <div class="input-group input-group-equal">
+                                    <div class="field-with-error flex-grow-1">
+                                        <input type="tel" id="srMobileNumber" class="form-control" placeholder="Enter 10-digit number" pattern="[0-9]{10}" maxlength="10" required style="min-height: 44px;">
+                                        <div id="srMobileError" class="error-message mt-2" style="display:none; color: var(--tf-danger); font-size: 0.85rem; font-weight: 600;"></div>
+                                    </div>
+                                    <button type="button" id="srSendOtpBtn" class="btn btn-secondary" style="min-height: 44px; white-space: nowrap;">
+                                        <i class="bi bi-chat-dots me-1"></i> Send OTP
+                                    </button>
+                                </div>
                             </div>
-                            <button type="submit" id="srSearchBtn" class="btn btn-secondary" style="min-height: 44px; white-space: nowrap;">
-                                <i class="bi bi-search"></i> Check Status
-                            </button>
+                        </div>
+
+                        <!-- OTP Input Field Group (Initially Hidden in Same Row) -->
+                        <div class="col-12 col-md-6" id="srOtpGroupCol" style="display: none;">
+                            <div class="form-group verification-field mb-0">
+                                <label for="srOtpInput" class="form-label fw-bold mb-2">Enter OTP <span class="required-asterisk">*</span></label>
+                                <div class="input-group input-group-equal">
+                                    <div class="field-with-error flex-grow-1">
+                                        <input type="text" id="srOtpInput" class="form-control" placeholder="Enter 4-digit OTP" maxlength="4" style="min-height: 44px;">
+                                        <div id="srOtpError" class="error-message mt-2" style="display:none; color: var(--tf-danger); font-size: 0.85rem; font-weight: 600;"></div>
+                                    </div>
+                                    <button type="button" id="srVerifyOtpBtn" class="btn btn-primary" style="min-height: 44px; white-space: nowrap;">
+                                        <i class="bi bi-shield-check me-1"></i> Verify OTP
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </form>
             </div>
 
-            <!-- Results Section (Initially Hidden) -->
+            <!-- Global Status Loader Container -->
+            <div id="statusLoaderContainer" class="text-center py-5" style="display: none; background: #ffffff; border: 1px solid var(--tf-border); border-radius: var(--tf-radius); box-shadow: var(--tf-shadow); margin-bottom: 28px;">
+                <div class="spinner-border text-primary mb-3" style="width: 3rem; height: 3rem;" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <h5 class="fw-bold text-dark mb-1" id="statusLoaderTitle">Fetching Service Request Status...</h5>
+                <p class="text-muted small mb-0" id="statusLoaderSubtitle">Connecting to Salesforce REST API, please wait.</p>
+            </div>
+
+            <!-- Results Section (Initially Hidden until OTP Verified) -->
             <div id="statusResultsSection" style="display: none;">
 
                 <!-- Account Title Header -->
@@ -534,8 +567,12 @@ get_header();
         document.addEventListener('DOMContentLoaded', () => {
             const srStatusForm = document.getElementById('srStatusForm');
             const srMobileNumber = document.getElementById('srMobileNumber');
-            const srSearchBtn = document.getElementById('srSearchBtn');
+            const srSendOtpBtn = document.getElementById('srSendOtpBtn');
+            const srOtpGroupCol = document.getElementById('srOtpGroupCol');
+            const srOtpInput = document.getElementById('srOtpInput');
+            const srVerifyOtpBtn = document.getElementById('srVerifyOtpBtn');
             const srMobileError = document.getElementById('srMobileError');
+            const srOtpError = document.getElementById('srOtpError');
             const statusResultsSection = document.getElementById('statusResultsSection');
 
             const statTotalCount = document.getElementById('statTotalCount');
@@ -565,12 +602,63 @@ get_header();
             let currentSearchQuery = '';
             let currentPage = 1;
             const recordsPerPage = 10;
+            let verifiedMobileNumber = '';
 
             const apiHandlerUrl = '<?php echo get_stylesheet_directory_uri(); ?>/template/api-handler.php';
 
-            srStatusForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
+            const statusLoaderContainer = document.getElementById('statusLoaderContainer');
+            const statusLoaderTitle = document.getElementById('statusLoaderTitle');
+            const statusLoaderSubtitle = document.getElementById('statusLoaderSubtitle');
+
+            function showStatusLoader(title = 'Fetching Service Request Status...', subtitle = 'Please wait.') {
+                if (statusLoaderTitle) statusLoaderTitle.textContent = title;
+                if (statusLoaderSubtitle) statusLoaderSubtitle.textContent = subtitle;
+                if (statusLoaderContainer) statusLoaderContainer.style.display = 'block';
+                if (statusResultsSection) statusResultsSection.style.display = 'none';
+            }
+
+            function hideStatusLoader() {
+                if (statusLoaderContainer) statusLoaderContainer.style.display = 'none';
+            }
+
+            // Check existing session on load
+            async function checkExistingSession() {
+                try {
+                    showStatusLoader('Checking Session...', 'Verifying existing authentication...');
+                    const response = await fetch(apiHandlerUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            action: 'checkSession'
+                        })
+                    });
+                    const data = await response.json();
+                    if (data.success && data.verified && data.mobile) {
+                        verifiedMobileNumber = data.mobile;
+                        srMobileNumber.value = verifiedMobileNumber;
+                        srMobileNumber.readOnly = true;
+                        srSendOtpBtn.style.display = 'none';
+                        srOtpGroupCol.style.display = 'none';
+                        await fetchAndDisplayStatus(verifiedMobileNumber);
+                    } else {
+                        hideStatusLoader();
+                    }
+                } catch (e) {
+                    console.error('Error checking existing session:', e);
+                    hideStatusLoader();
+                }
+            }
+
+            checkExistingSession();
+
+            let timerInterval = null;
+
+            // Send OTP handler
+            srSendOtpBtn.addEventListener('click', async () => {
                 srMobileError.style.display = 'none';
+                srOtpError.style.display = 'none';
                 const mobile = srMobileNumber.value.trim();
 
                 if (!mobile || !/^[0-9]{10}$/.test(mobile)) {
@@ -579,10 +667,138 @@ get_header();
                     return;
                 }
 
-                // Set Loading state
-                srSearchBtn.disabled = true;
-                srSearchBtn.innerHTML = '<span class="spinner-border spinner-border-sm spinner-border-sm-custom me-2" role="status" aria-hidden="true"></span> Fetching...';
+                srSendOtpBtn.disabled = true;
+                srSendOtpBtn.innerHTML = '<span class="spinner-border spinner-border-sm spinner-border-sm-custom me-2" role="status" aria-hidden="true"></span> Sending...';
 
+                let isSuccess = false;
+
+                try {
+                    const response = await fetch(apiHandlerUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            action: 'sendOTP',
+                            mobileNumber: mobile
+                        })
+                    });
+                    const data = await response.json();
+
+                    if (data.success) {
+                        isSuccess = true;
+                        srOtpGroupCol.style.display = 'block';
+                        srOtpInput.focus();
+                        srMobileError.style.display = 'none';
+                        if (data.otp) {
+                            console.log('OTP generated (test mode):', data.otp);
+                        }
+                    } else {
+                        srMobileError.textContent = data.message || 'Failed to send OTP. Please try again.';
+                        srMobileError.style.display = 'block';
+                    }
+                } catch (err) {
+                    console.error('Error sending OTP:', err);
+                    srMobileError.textContent = 'Network or server error while sending OTP.';
+                    srMobileError.style.display = 'block';
+                } finally {
+                    if (isSuccess) {
+                        if (timerInterval) clearInterval(timerInterval);
+                        srSendOtpBtn.disabled = true;
+                        srMobileNumber.disabled = true;
+                        let timeLeft = 300; // 5 minutes
+                        const formatTime = (seconds) => {
+                            const mins = Math.floor(seconds / 60);
+                            const secs = seconds % 60;
+                            return `${mins}:${secs.toString().padStart(2, '0')}`;
+                        };
+                        srSendOtpBtn.textContent = `Resend OTP (${formatTime(timeLeft)})`;
+
+                        timerInterval = setInterval(() => {
+                            timeLeft--;
+                            srSendOtpBtn.textContent = `Resend OTP (${formatTime(timeLeft)})`;
+
+                            if (timeLeft <= 0) {
+                                clearInterval(timerInterval);
+                                srSendOtpBtn.disabled = false;
+                                srMobileNumber.disabled = false;
+                                srSendOtpBtn.innerHTML = '<i class="bi bi-chat-dots me-1"></i> Resend OTP';
+                            }
+                        }, 1000);
+                    } else {
+                        srSendOtpBtn.disabled = false;
+                        srSendOtpBtn.innerHTML = '<i class="bi bi-chat-dots me-1"></i> Send OTP';
+                    }
+                }
+            });
+
+            // Verify OTP handler
+            srVerifyOtpBtn.addEventListener('click', async () => {
+                srMobileError.style.display = 'none';
+                srOtpError.style.display = 'none';
+                const mobile = srMobileNumber.value.trim();
+                const otp = srOtpInput.value.trim();
+
+                if (!mobile || !/^[0-9]{10}$/.test(mobile)) {
+                    srMobileError.textContent = 'Please enter a valid 10-digit mobile number.';
+                    srMobileError.style.display = 'block';
+                    return;
+                }
+
+                if (!otp || otp.length < 4) {
+                    srOtpError.textContent = 'Please enter the 4-digit OTP sent to your WhatsApp.';
+                    srOtpError.style.display = 'block';
+                    return;
+                }
+
+                srVerifyOtpBtn.disabled = true;
+                srVerifyOtpBtn.innerHTML = '<span class="spinner-border spinner-border-sm spinner-border-sm-custom me-2" role="status" aria-hidden="true"></span> Verifying...';
+
+                try {
+                    const response = await fetch(apiHandlerUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            action: 'verifyOTP',
+                            mobileNumber: mobile,
+                            otp: otp
+                        })
+                    });
+                    const data = await response.json();
+
+                    if (data.success) {
+                        verifiedMobileNumber = mobile;
+                        srMobileNumber.readOnly = true;
+                        srSendOtpBtn.style.display = 'none';
+                        srOtpGroupCol.style.display = 'none';
+                        await fetchAndDisplayStatus(verifiedMobileNumber);
+                    } else {
+                        srOtpError.textContent = data.message || 'Invalid OTP. Please check and try again.';
+                        srOtpError.style.display = 'block';
+                    }
+                } catch (err) {
+                    console.error('Error verifying OTP:', err);
+                    srOtpError.textContent = 'Network or server error while verifying OTP.';
+                    srOtpError.style.display = 'block';
+                } finally {
+                    srVerifyOtpBtn.disabled = false;
+                    srVerifyOtpBtn.innerHTML = '<i class="bi bi-shield-check me-1"></i> Verify OTP';
+                }
+            });
+
+            srStatusForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                if (srOtpGroupCol.style.display !== 'none') {
+                    srVerifyOtpBtn.click();
+                } else {
+                    srSendOtpBtn.click();
+                }
+            });
+
+            async function fetchAndDisplayStatus(mobile) {
+                showStatusLoader('Fetching Service Request Status...', 'Please wait.');
                 try {
                     const response = await fetch(apiHandlerUrl, {
                         method: 'POST',
@@ -613,10 +829,9 @@ get_header();
                     srMobileError.style.display = 'block';
                     statusResultsSection.style.display = 'none';
                 } finally {
-                    srSearchBtn.disabled = false;
-                    srSearchBtn.innerHTML = '<i class="bi bi-search"></i> Check Status';
+                    hideStatusLoader();
                 }
-            });
+            }
 
             function displayServiceRequests(data, mobile) {
                 const list = data.serviceRequests || [];
