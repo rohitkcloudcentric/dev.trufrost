@@ -29,7 +29,11 @@ get_header();
                         <h1>Raise a Service Request</h1>
                         <p>Log your issue and our service team will assist you within <strong>24 hours</strong>.</p>
                     </div>
-                    <!-- <span class="response-badge"><i class="bi bi-lightning-charge-fill"></i> Priority routing enabled</span> -->
+                    <div>
+                        <a href="<?php echo site_url('/service-request-status/'); ?>" class="btn btn-secondary shadow-sm">
+                            <i class="bi bi-clock-history text-primary"></i> Check Request Status
+                        </a>
+                    </div>
                 </div>
                 <span class="mandatory-note">* Marked fields are mandatory. keep GST details/PAN card details before registering ticket.</span>
             </div>

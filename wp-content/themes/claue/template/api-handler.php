@@ -2041,12 +2041,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         case 'getServiceRequestStatus':
             $accessToken = $_SESSION['salesforce_token'] ?? null;
+            if (!$accessToken) {
+                $accessToken = getOAuthToken();
+                if ($accessToken) {
+                    $_SESSION['salesforce_token'] = $accessToken;
+                }
+            }
             $mobileNumber = $input['mobileNumber'] ?? '';
 
             if (!$accessToken) {
                 echo json_encode([
                     'success' => false,
-                    'message' => 'No access token found. Please verify OTP first.'
+                    'message' => 'Unable to authenticate with Salesforce. Please try again later.'
                 ]);
                 exit;
             }
