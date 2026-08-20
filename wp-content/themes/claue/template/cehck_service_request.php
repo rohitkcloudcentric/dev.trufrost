@@ -417,6 +417,9 @@ get_header();
                                     <button type="button" id="srSendOtpBtn" class="btn btn-secondary" style="min-height: 44px; white-space: nowrap;">
                                         <i class="bi bi-chat-dots me-1"></i> Send OTP
                                     </button>
+                                    <button type="button" id="srFormChangeMobileBtn" class="btn btn-outline-primary" style="min-height: 44px; white-space: nowrap; display: none;">
+                                        <i class="bi bi-pencil-square me-1"></i> Change Mobile Number
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -458,6 +461,11 @@ get_header();
                         <h4 id="accountNameHeader" class="fw-bold mb-1" style="color: var(--tf-ink);">Service History</h4>
                         <span id="accountPhoneSubtitle" class="text-muted small"></span>
                     </div>
+                    <!-- <div>
+                        <button type="button" id="srChangeMobileBtn" class="btn btn-outline-primary btn-sm fw-bold" style="display: none;">
+                            <i class="bi bi-pencil-square me-1"></i> Change Mobile Number
+                        </button>
+                    </div> -->
                 </div>
 
                 <!-- Metrics Summary Cards -->
@@ -530,7 +538,7 @@ get_header();
                                     <th>Status</th>
                                     <th>Asset & Model</th>
                                     <th>Address</th>
-                                    <th>Purpose</th>
+                                    <th>Call Category</th>
                                     <th>Date Opened</th>
                                     <th>Remark / Reason</th>
                                 </tr>
@@ -568,6 +576,8 @@ get_header();
             const srStatusForm = document.getElementById('srStatusForm');
             const srMobileNumber = document.getElementById('srMobileNumber');
             const srSendOtpBtn = document.getElementById('srSendOtpBtn');
+            const srFormChangeMobileBtn = document.getElementById('srFormChangeMobileBtn');
+            const srChangeMobileBtn = document.getElementById('srChangeMobileBtn');
             const srOtpGroupCol = document.getElementById('srOtpGroupCol');
             const srOtpInput = document.getElementById('srOtpInput');
             const srVerifyOtpBtn = document.getElementById('srVerifyOtpBtn');
@@ -621,6 +631,43 @@ get_header();
                 if (statusLoaderContainer) statusLoaderContainer.style.display = 'none';
             }
 
+            function showChangeMobileButtons(show = true) {
+                const displayVal = show ? 'inline-flex' : 'none';
+                if (srFormChangeMobileBtn) srFormChangeMobileBtn.style.display = displayVal;
+                if (srChangeMobileBtn) srChangeMobileBtn.style.display = show ? 'inline-block' : 'none';
+            }
+
+            function enableChangeMobileMode() {
+                srMobileNumber.readOnly = false;
+                srMobileNumber.disabled = false;
+                srMobileNumber.value = '';
+                srMobileNumber.focus();
+
+                srSendOtpBtn.style.display = 'inline-flex';
+                srSendOtpBtn.disabled = false;
+                srSendOtpBtn.innerHTML = '<i class="bi bi-chat-dots me-1"></i> Send OTP';
+
+                showChangeMobileButtons(false);
+
+                srOtpGroupCol.style.display = 'none';
+                srOtpInput.value = '';
+
+                if (timerInterval) {
+                    clearInterval(timerInterval);
+                    timerInterval = null;
+                }
+
+                srMobileError.style.display = 'none';
+                srOtpError.style.display = 'none';
+            }
+
+            if (srFormChangeMobileBtn) {
+                srFormChangeMobileBtn.addEventListener('click', enableChangeMobileMode);
+            }
+            if (srChangeMobileBtn) {
+                srChangeMobileBtn.addEventListener('click', enableChangeMobileMode);
+            }
+
             // Check existing session on load
             async function checkExistingSession() {
                 try {
@@ -641,6 +688,7 @@ get_header();
                         srMobileNumber.readOnly = true;
                         srSendOtpBtn.style.display = 'none';
                         srOtpGroupCol.style.display = 'none';
+                        showChangeMobileButtons(true);
                         await fetchAndDisplayStatus(verifiedMobileNumber);
                     } else {
                         hideStatusLoader();
@@ -773,6 +821,7 @@ get_header();
                         srMobileNumber.readOnly = true;
                         srSendOtpBtn.style.display = 'none';
                         srOtpGroupCol.style.display = 'none';
+                        showChangeMobileButtons(true);
                         await fetchAndDisplayStatus(verifiedMobileNumber);
                     } else {
                         srOtpError.textContent = data.message || 'Invalid OTP. Please check and try again.';
@@ -935,6 +984,25 @@ get_header();
                     const closeDate = sr.dateTimeClosed ? `<br><small class="text-muted">Closed: ${sr.dateTimeClosed}</small>` : '';
                     const remark = sr.serviceRequestClosedRemark || sr.customerComplaint || '—';
 
+                    let filesHtml = '';
+                    if (Array.isArray(sr.files) && sr.files.length > 0) {
+                        filesHtml = '<div class="mt-2 d-flex flex-wrap gap-1">';
+                        sr.files.forEach(file => {
+                            if (file.publicViewUrl) {
+                                const fileName = file.fileName || 'Service Report.pdf';
+                                const ext = (file.fileExtension || '').toLowerCase();
+                                const isPdf = ext === 'pdf' || fileName.toLowerCase().endsWith('.pdf');
+                                const iconClass = isPdf ? 'bi-file-earmark-pdf-fill text-danger' : 'bi-file-earmark-arrow-down-fill text-primary';
+                                filesHtml += `
+                                    <a href="${file.publicViewUrl}" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-light border py-1 px-2 d-inline-flex align-items-center gap-1 text-decoration-none shadow-sm" style="font-size: 0.78rem; font-weight: 600;" title="View / Download ${fileName}">
+                                        <i class="bi ${iconClass}"></i> ${fileName} <i class="bi bi-box-arrow-up-right text-muted ms-1" style="font-size: 0.7rem;"></i>
+                                    </a>
+                                `;
+                            }
+                        });
+                        filesHtml += '</div>';
+                    }
+
                     tr.innerHTML = `
                     <td> 
                         <span class="ticket-number">${sr.ticketNumber || 'N/A'}</span>
@@ -944,6 +1012,7 @@ get_header();
                         <span class="status-badge ${badgeClass}">
                             <i class="bi ${badgeIcon}"></i> ${sr.status || 'Unknown'}
                         </span>
+                        ${filesHtml}
                     </td>
                     <td>
                         <span class="asset-title">${assetName}</span>
